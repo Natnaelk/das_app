@@ -1,3 +1,4 @@
+import 'package:das_app/screens/create_account/create_account_screen.dart';
 import 'package:flutter/material.dart';
 import '../components/splash_content.dart';
 import 'package:das_app/constants.dart';
@@ -67,7 +68,9 @@ int currentPage = 0;
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   color: kPrimaryColor,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, CreateAccountScreen.routeName);
+                                  },
                                   child: const Text("Continue",
                                     style: TextStyle(
                                       fontSize: 18,

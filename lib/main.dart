@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/splash/splash_screen.dart';
 import '../routes.dart';
+import 'package:das_app/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,13 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: "Muli",
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-
-        primarySwatch: Colors.blue,
-      ),
+      theme: theme(),
      initialRoute: SplashScreen.routeName,
       routes: routes,
     );
