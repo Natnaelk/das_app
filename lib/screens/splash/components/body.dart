@@ -1,10 +1,11 @@
+import 'package:das_app/components/default_button.dart';
 import 'package:flutter/material.dart';
 import '../components/splash_content.dart';
 import 'package:das_app/constants.dart';
 import 'package:das_app/screens/Sign_in/sign_in_screen.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key? key}) : super(key: key);
+  const Body({Key key}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -59,26 +60,12 @@ class _BodyState extends State<Body> {
                           splashData.length, (index) => buildDot(index: index)),
                     ),
                     const Spacer(flex: 2),
-                    SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: FlatButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          color: kPrimaryColor,
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, SignInScreen.routeName);
-                          },
-                          child: const Text(
-                            "Continue",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )),
+                    DefaultButton(
+                      text: "Continue",
+                      press: () {
+                        Navigator.pushNamed(context, SignInScreen.routeName);
+                      },
+                    ),
                     const Spacer(),
                   ])),
             ),
@@ -86,7 +73,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  AnimatedContainer buildDot({int? index}) {
+  AnimatedContainer buildDot({int index}) {
     return AnimatedContainer(
       margin: const EdgeInsets.only(right: 5),
       height: 6,

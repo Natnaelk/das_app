@@ -1,74 +1,68 @@
+import 'package:das_app/components/default_button.dart';
+import 'package:das_app/components/form_error.dart';
 import 'package:das_app/constants.dart';
+import 'package:das_app/screens/sign_in/components/sign_form.dart';
 import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Body extends StatelessWidget {
-  const Body({Key? key}) : super(key: key);
-
+  const Body({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: SizedBox(
+    return ListView(
+      children: <Widget>[
+        SizedBox(
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               // ignore: prefer_const_literals_to_create_immutables
-              child: Column(children: <Widget>[
-                const Text(
-                  "Welcome Back",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Column(children: <Widget>[
+                  SizedBox(
+                    height: SizeConfig.screenHeight * 0.04,
                   ),
-                ),
-                const Text(
-                  "sign in with your phone number and password",
-                  textAlign: TextAlign.center,
-                ),
-                const SignForm(),
-              ]),
-            )));
-  }
-}
-
-class SignForm extends StatefulWidget {
-  const SignForm({Key? key}) : super(key: key);
-
-  @override
-  _SignFormState createState() => _SignFormState();
-}
-
-class _SignFormState extends State<SignForm> {
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-        child: Column(
-      children: <Widget>[
-        TextFormField(
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-                labelText: "Phone",
-                hintText: "Enter your phone no",
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      0,
-                      getProportionateScreenWidth(20),
-                      getProportionateScreenWidth(20),
-                      getProportionateScreenWidth(20)),
-                  child: const Icon(Icons.phone),
-                ))),
-        TextFormField(
-            decoration: const InputDecoration(
-          labelText: "Password",
-          hintText: "Enter your Password",
-
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          // suffixIcon: SvgPicture.asset("assets/icons/call.svg"
-        ))
+                  const Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    "sign in with your phone number and password",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: SizeConfig.screenHeight * 0.08,
+                  ),
+                  const SignForm(),
+                  SizedBox(
+                    height: getProportionateScreenHeight(40),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Don't have an account? ",
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(15),
+                        ),
+                      ),
+                      Text(
+                        "Create Account",
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(15),
+                          color: kPrimaryColor,
+                        ),
+                      )
+                    ],
+                  )
+                ]),
+              ),
+            ))
       ],
-    ));
+    );
   }
 }
