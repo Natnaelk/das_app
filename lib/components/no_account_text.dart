@@ -1,6 +1,5 @@
-import 'package:das_app/screens/forgot_password/forgot_password_screen.dart';
+import 'package:das_app/screens/create_account/create_account_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../constants.dart';
 import '../size_config.dart';
 
@@ -13,21 +12,24 @@ class NoAccountText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         Text(
-          "Don’t have an account? ",
-          style: TextStyle(fontSize: getProportionateScreenWidth(16)),
+          "Don't have an account? ",
+          style: TextStyle(
+            fontSize: getProportionateScreenWidth(15),
+          ),
         ),
         GestureDetector(
           onTap: () =>
-              Navigator.pushNamed(context, ForgotPasswordScreen.routeName),
+              Navigator.pushNamed(context, CreateAccountScreen.routeName),
           child: Text(
-            "Sign Up",
+            "Create Account",
             style: TextStyle(
-                fontSize: getProportionateScreenWidth(16),
-                color: kPrimaryColor),
+              fontSize: getProportionateScreenWidth(15),
+              color: kPrimaryColor,
+            ),
           ),
-        ),
+        )
       ],
     );
   }

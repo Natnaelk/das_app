@@ -1,4 +1,5 @@
 import 'package:das_app/components/custom_surfix_icon.dart';
+import 'package:das_app/screens/login_success/login_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:das_app/components/default_button.dart';
 import 'package:das_app/components/form_error.dart';
@@ -104,6 +105,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             press: () {
               if (_formKey.currentState.validate()) {
                 // for future construction
+                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
               }
             },
           ),

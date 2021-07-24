@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../Sign_in/components/body.dart';
 
 class SignInScreen extends StatelessWidget {
-  static String routeName = "/create_account";
+  static String routeName = "/sign_in";
 
   const SignInScreen({Key key}) : super(key: key);
   @override
