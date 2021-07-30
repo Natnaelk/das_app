@@ -1,4 +1,5 @@
 import 'package:das_app/screens/Groups/groups_screen.dart';
+import 'package:das_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:das_app/screens/home/home_screen.dart';
 import 'package:das_app/screens/otp/otp_screen.dart';
 import 'package:das_app/screens/login_success/login_success_screen.dart';
@@ -15,6 +16,7 @@ final Map<String, WidgetBuilder> routes = {
   ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(),
   LoginSuccessScreen.routeName: (context) => LoginSuccessScreen(),
   CreateAccountScreen.routeName: (context) => const CreateAccountScreen(),
+  // CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
   OtpScreen.routeName: (context) => const OtpScreen(),
   HomeScreen.routeName: (context) => const HomeScreen(),
   GroupsScreen.routeName: (context) => GroupsScreen(),

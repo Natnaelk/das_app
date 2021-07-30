@@ -10,7 +10,9 @@ class SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: SizeConfig.screenWidth * 0.6,
+      padding:
+          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(70)),
+      width: SizeConfig.screenWidth * 0.99,
       height: 50,
       decoration: BoxDecoration(
         color: kSecondaryColor.withOpacity(0.1),
@@ -32,7 +34,7 @@ class SearchField extends StatelessWidget {
             ),
             contentPadding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(20),
-                vertical: getProportionateScreenWidth(9))),
+                vertical: getProportionateScreenWidth(15))),
       ),
     );
   }

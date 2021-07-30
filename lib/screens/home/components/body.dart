@@ -19,7 +19,7 @@ class Body extends StatelessWidget {
         child: SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          SizedBox(height: getProportionateScreenWidth(20)),
+          SizedBox(height: getProportionateScreenWidth(10)),
           // home header widget that have search field and notification icon button
           const HomeHeader(),
           SizedBox(height: getProportionateScreenWidth(30)),

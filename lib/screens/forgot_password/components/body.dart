@@ -9,8 +9,6 @@ import 'package:das_app/size_config.dart';
 import '../../../constants.dart';
 
 class Body extends StatelessWidget {
-  const Body({Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -30,12 +28,12 @@ class Body extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Text(
-                "Please enter your phone and we will send \nyou a verificaton code",
+              Text(
+                "Please enter your email and we will send \nyou a link to return to your account",
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: SizeConfig.screenHeight * 0.1),
-              const ForgotPassForm(),
+              ForgotPassForm(),
             ],
           ),
         ),
@@ -45,8 +43,6 @@ class Body extends StatelessWidget {
 }
 
 class ForgotPassForm extends StatefulWidget {
-  const ForgotPassForm({Key key}) : super(key: key);
-
   @override
   _ForgotPassFormState createState() => _ForgotPassFormState();
 }
@@ -54,7 +50,7 @@ class ForgotPassForm extends StatefulWidget {
 class _ForgotPassFormState extends State<ForgotPassForm> {
   final _formKey = GlobalKey<FormState>();
   List<String> errors = [];
-  String phone;
+  String email;
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -62,39 +58,41 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
       child: Column(
         children: [
           TextFormField(
-            keyboardType: TextInputType.phone,
-            onSaved: (newValue) => phone = newValue,
+            keyboardType: TextInputType.emailAddress,
+            onSaved: (newValue) => email = newValue,
             onChanged: (value) {
-              if (value.isNotEmpty && errors.contains(kPhoneNullError)) {
+              if (value.isNotEmpty && errors.contains(kEmailNullError)) {
                 setState(() {
-                  errors.remove(kPhoneNullError);
+                  errors.remove(kEmailNullError);
                 });
-              } else if (value.length == 10 &&
-                  errors.contains(kInvalidPhoneError)) {
+              } else if (emailValidatorRegExp.hasMatch(value) &&
+                  errors.contains(kInvalidEmailError)) {
                 setState(() {
-                  errors.remove(kInvalidPhoneError);
+                  errors.remove(kInvalidEmailError);
                 });
               }
               return null;
             },
             validator: (value) {
-              if (value.isEmpty && !errors.contains(kPhoneNullError)) {
+              if (value.isEmpty && !errors.contains(kEmailNullError)) {
                 setState(() {
-                  errors.add(kPhoneNullError);
+                  errors.add(kEmailNullError);
                 });
-              } else if (value.length != 10 &&
-                  !errors.contains(kInvalidPhoneError)) {
+              } else if (!emailValidatorRegExp.hasMatch(value) &&
+                  !errors.contains(kInvalidEmailError)) {
                 setState(() {
-                  errors.add(kInvalidPhoneError);
+                  errors.add(kInvalidEmailError);
                 });
               }
               return null;
             },
-            decoration: const InputDecoration(
-              labelText: "Phone",
-              hintText: "Enter Your Phone number",
+            decoration: InputDecoration(
+              labelText: "Email",
+              hintText: "Enter your email",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Call.svg"),
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
           ),
           SizedBox(height: getProportionateScreenHeight(30)),
@@ -104,13 +102,12 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             text: "Continue",
             press: () {
               if (_formKey.currentState.validate()) {
-                // for future construction
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                // Do what you want to do
               }
             },
           ),
           SizedBox(height: SizeConfig.screenHeight * 0.1),
-          const NoAccountText(),
+          NoAccountText(),
         ],
       ),
     );
