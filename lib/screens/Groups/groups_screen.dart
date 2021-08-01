@@ -4,6 +4,8 @@ import 'package:das_app/enums.dart';
 import 'package:das_app/screens/Groups/components/body.dart';
 import 'package:das_app/screens/groups/components/search_field.dart';
 import 'package:das_app/screens/groups/components/tabbar.dart';
+import 'package:das_app/screens/idirgroup/idir_screen.dart';
+import 'package:das_app/screens/iqubgroup/iqub_screen.dart';
 import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,21 +37,23 @@ class GroupsScreen extends StatelessWidget {
               tabs: [
                 Tab(
                   child: Container(
-                      child: Text(
+                      child: const Text(
                     'My Iqubs',
                     style: TextStyle(fontSize: 15),
                   )),
                 ),
                 Tab(
                   child: Container(
-                      child: Text(
+                      child: const Text(
                     'My Idirs',
                     style: TextStyle(fontSize: 15),
                   )),
                 )
               ],
             )),
-        body: Body(),
+        body: TabBarView(
+          children: <Widget>[IqubScreen(), IdirScreen()],
+        ),
         bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.groups),
       ),
     );
