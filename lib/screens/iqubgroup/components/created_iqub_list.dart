@@ -1,45 +1,56 @@
-import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/size_config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/models/auth_model.dart';
+import 'package:das_app/models/iqub_model.dart';
+import 'package:das_app/screens/iqubgroup/roles/iqub_admin_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class CreatedIqub extends StatelessWidget {
+class CreatedIqub extends StatefulWidget {
   const CreatedIqub({
     Key key,
   }) : super(key: key);
 
   @override
+  State<CreatedIqub> createState() => _CreatedIqubState();
+}
+
+class _CreatedIqubState extends State<CreatedIqub> {
+  @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: <Widget>[
-          CreatedIqubsCard(
-            IqubName: "yesetoch meredaja",
-            IqubProPic: 'assets/images/savingimage.jpg',
-            IqubType: "Daily",
-            PooledMoneyAmount: 100,
-          ),
-          CreatedIqubsCard(
-            IqubName: "Wereda 8",
-            IqubProPic: 'assets/images/insurancepic.jpg',
-            IqubType: "Yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-          CreatedIqubsCard(
-            IqubName: "Mercato Wetatoch",
-            IqubProPic: 'assets/images/savingimage.jpg',
-            IqubType: "yewendoch",
-            PooledMoneyAmount: 100,
-          ),
-          CreatedIqubsCard(
-            IqubName: "hawassa 4th year",
-            IqubProPic: 'assets/images/insurancepic.jpg',
-            IqubType: "yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-        ]),
-      ),
-    ]);
+    AuthModel _authStream = Provider.of<AuthModel>(context);
+    final iqubs = Provider.of<List<IqubModel>>(context);
+    String currentUid = _authStream.uid;
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("iqubs")
+            .where("admin", isEqualTo: currentUid)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Text('Loading...');
+          }
+
+          return InkWell(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data.docs.map((document) {
+                  return Center(
+                    child: CreatedIqubsCard(
+                      IqubName: document['iqubName'],
+                      IqubProPic: 'assets/images/insurancepic.jpg',
+                      IqubType: 'Monthly',
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => iqubAdminScreen()));
+            },
+          );
+        });
   }
 }
 
@@ -61,10 +72,10 @@ class CreatedIqubsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: getProportionateScreenWidth(20)),
+      padding: EdgeInsets.only(left: (20)),
       child: SizedBox(
-        width: getProportionateScreenWidth(150),
-        height: getProportionateScreenWidth(150),
+        width: (120),
+        height: (120),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Stack(
@@ -86,9 +97,8 @@ class CreatedIqubsCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(15),
-                      vertical: getProportionateScreenWidth(10)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: (15), vertical: (10)),
                   child: Text.rich(TextSpan(
                       style: const TextStyle(
                         color: Colors.white,
@@ -97,14 +107,14 @@ class CreatedIqubsCard extends StatelessWidget {
                         TextSpan(
                           text: "$IqubName\n",
                           style: TextStyle(
-                            fontSize: getProportionateScreenWidth(18),
+                            fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
                             text: "$IqubType $PooledMoneyAmount birr",
                             style: TextStyle(
-                              fontSize: getProportionateScreenWidth(16),
+                              fontSize: (16),
                               fontWeight: FontWeight.bold,
                             ))
                       ])),
