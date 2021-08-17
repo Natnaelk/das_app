@@ -7,9 +7,24 @@ import 'package:flutter/material.dart';
 import 'profile_menu.dart';
 import 'profile_pic.dart';
 
-class Body extends StatelessWidget {
-  bool shouldNavigate = false;
+class Body extends StatefulWidget {
   @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  @override
+  void _signOut(BuildContext context) async {
+    String _returnString = await Auth().signOut();
+    if (_returnString == "success") {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        SignInScreen.routeName,
+        (route) => false,
+      );
+    }
+  }
+
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -38,23 +53,9 @@ class Body extends StatelessWidget {
             press: () {},
           ),
           ProfileMenu(
-            text: "Log Out",
-            icon: "assets/icons/Log out.svg",
-            press: () async {
-              shouldNavigate = await signOut();
-              if (shouldNavigate) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, SignInScreen.routeName, (route) => false);
-              } else {
-                AlertDialog(
-                  title: Text(
-                    "Error",
-                    style: TextStyle(color: kPrimaryColor),
-                  ),
-                );
-              }
-            },
-          ),
+              text: "Log Out",
+              icon: "assets/icons/Log out.svg",
+              press: () => _signOut(context))
         ],
       ),
     );

@@ -11,13 +11,12 @@ class SplashContent extends StatelessWidget {
   final String text, image;
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     return ListView(children: <Widget>[
       Text(
         "DAS",
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: getProportionateScreenWidth(36),
+          fontSize: 36,
           color: kPrimaryColor,
           fontWeight: FontWeight.bold,
         ),
@@ -28,9 +27,11 @@ class SplashContent extends StatelessWidget {
       ),
       const Padding(padding: EdgeInsets.only(top: 10)),
       //const Spacer(flex: 2),
-      Image.asset(image,
-          height: getProportionateScreenHeight(264),
-          width: getProportionateScreenWidth(235))
+      Image.asset(
+        image,
+        height: 264,
+        width: 235,
+      )
     ]);
   }
 }

@@ -1,76 +1,86 @@
-import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/size_config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/models/auth_model.dart';
+import 'package:das_app/screens/idirgroup/roles/idir_admin_screen.dart';
+import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class CreatedIdir extends StatelessWidget {
-  const CreatedIdir({
-    Key key,
-  }) : super(key: key);
+class CreatedIdir extends StatefulWidget {
+  @override
+  State<CreatedIdir> createState() => _CreatedIdirState();
+}
 
+class _CreatedIdirState extends State<CreatedIdir> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: <Widget>[
-          CreatedIdirsCard(
-            idirName: "yesetoch meredaja",
-            idirProPic: 'assets/images/savingimage.jpg',
-            idirType: "Daily",
-            PooledMoneyAmount: 100,
-          ),
-          CreatedIdirsCard(
-            idirName: "Wereda 8",
-            idirProPic: 'assets/images/insurancepic.jpg',
-            idirType: "Yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-          CreatedIdirsCard(
-            idirName: "Mercato Wetatoch",
-            idirProPic: 'assets/images/savingimage.jpg',
-            idirType: "yewendoch",
-            PooledMoneyAmount: 100,
-          ),
-          CreatedIdirsCard(
-            idirName: "hawassa 4th year",
-            idirProPic: 'assets/images/insurancepic.jpg',
-            idirType: "yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-        ]),
-      ),
-    ]);
+    AuthModel _authStream = Provider.of<AuthModel>(context);
+    String currentUid = _authStream.uid;
+    return StreamBuilder(
+        stream: DatabaseService()
+            .idirsCollection
+            .where("admin", isEqualTo: currentUid)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          //var Idir = snapshot.data;
+          // final Idir = snapshot.data.docs;
+          if (!snapshot.hasData) {
+            return const Text('Loading...');
+          }
+          return InkWell(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data.docs.map((document) {
+                  return Center(
+                    child: CreatedIdirsCard(
+                      IdirName: document['idirName'],
+                      IdirProPic: 'assets/images/insurancepic.jpg',
+                      IdirType: 'Monthly',
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => idirAdminScreen(),
+                  ));
+            },
+          );
+        });
   }
 }
 
 class CreatedIdirsCard extends StatelessWidget {
   const CreatedIdirsCard({
     Key key,
-    @required this.idirName,
+    @required this.IdirName,
     @required this.PooledMoneyAmount,
-    @required this.idirType,
+    @required this.IdirType,
     @required this.press,
-    @required this.idirProPic,
+    @required this.IdirProPic,
   }) : super(key: key);
-  final String idirName;
-  final String idirProPic;
+  final String IdirName;
+  final String IdirProPic;
   final int PooledMoneyAmount;
-  final String idirType;
+  final String IdirType;
   final GestureTapCallback press;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: getProportionateScreenWidth(20)),
+      padding: EdgeInsets.only(left: (20)),
       child: SizedBox(
-        width: getProportionateScreenWidth(150),
-        height: getProportionateScreenWidth(150),
+        width: (120),
+        height: (120),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: <Widget>[
                 Image.asset(
-                  idirProPic,
+                  IdirProPic,
                   fit: BoxFit.cover,
                 ),
                 Container(
@@ -79,32 +89,31 @@ class CreatedIdirsCard extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF343434).withOpacity(0.4),
-                        Color(0xFF343434).withOpacity(0.15),
+                        const Color(0xFF343434).withOpacity(0.4),
+                        const Color(0xFF343434).withOpacity(0.15),
                       ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(15),
-                      vertical: getProportionateScreenWidth(10)),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: (15), vertical: (10)),
                   child: Text.rich(TextSpan(
                       style: const TextStyle(
                         color: Colors.white,
                       ),
                       children: [
                         TextSpan(
-                          text: "$idirName\n",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenWidth(18),
+                          text: "$IdirName\n",
+                          style: const TextStyle(
+                            fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
-                            text: "$idirType $PooledMoneyAmount birr",
-                            style: TextStyle(
-                              fontSize: getProportionateScreenWidth(16),
+                            text: "$IdirType $PooledMoneyAmount birr",
+                            style: const TextStyle(
+                              fontSize: (16),
                               fontWeight: FontWeight.bold,
                             ))
                       ])),

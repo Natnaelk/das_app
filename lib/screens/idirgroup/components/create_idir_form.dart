@@ -1,13 +1,12 @@
 import 'package:das_app/helper/keyboard.dart';
+import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/groups/groups_screen.dart';
-import 'package:das_app/services/auth.dart';
+import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
-import 'package:das_app/components/custom_surfix_icon.dart';
 import 'package:das_app/components/default_button.dart';
 import 'package:das_app/components/form_error.dart';
-
+import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import '../../../size_config.dart';
 
 class CreateIdirForm extends StatefulWidget {
   static var routeName = '/createIdirForm';
@@ -17,25 +16,44 @@ class CreateIdirForm extends StatefulWidget {
 }
 
 class _CreateIdirFormState extends State<CreateIdirForm> {
-  TextEditingController bankAcccontroller = TextEditingController();
-  TextEditingController poolAmountcontroller = TextEditingController();
+  void _createIdir(BuildContext context, String idirName) async {
+    try {
+      AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
+      String currentUid = _authStream.uid;
+      await DatabaseService().createIdir(currentUid, idirName);
+      if (currentUid.isNotEmpty) {
+        Navigator.pushNamed(context, GroupsScreen.routeName);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("Idir created successfully"),
+          duration: Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("error"),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   TextEditingController addresscontroller = TextEditingController();
-  TextEditingController cyclecontroller = TextEditingController();
+  TextEditingController poolAmountcontroller = TextEditingController();
   TextEditingController Namecontroller = TextEditingController();
   TextEditingController startingDatecontroller = TextEditingController();
+  TextEditingController bankAccountcontroller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   String Name;
   String startingDate;
+  var Cycle;
   String address;
+  var winAmount;
   String poolAmount;
-  dynamic bankAccount;
-  dynamic cycle;
-  @override
-  void setState(VoidCallback fn) {
-    // TODO: implement setState
-    super.setState(fn);
-  }
+  var bankAccount;
 
   final List<String> errors = [];
 
@@ -60,50 +78,50 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
       key: _formKey,
       child: Scaffold(
         body: ListView(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+          padding: EdgeInsets.symmetric(horizontal: (10)),
           children: [
-            SizedBox(height: SizeConfig.screenHeight * 0.04),
+            SizedBox(height: 60),
             Text(
               "Complete the form",
               style: headingStyle,
               textAlign: TextAlign.center,
             ),
             const Text(
-              "Complete idir details",
+              "Complete Idir details",
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: getProportionateScreenHeight(50)),
+            SizedBox(height: (50)),
             buildNameFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildstartingDateFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildPoolAmountField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildAddressFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (20)),
             FormError(errors: errors),
-            SizedBox(height: getProportionateScreenHeight(40)),
+            SizedBox(height: (20)),
             DefaultButton(
                 text: "Continue",
-                press: () async {
-                  bool shouldNavigate = await signUp(
-                    poolAmountcontroller.text,
-                    bankAcccontroller.text,
-                    Namecontroller.text,
-                    startingDatecontroller.text,
-                    poolAmountcontroller.text,
-                    addresscontroller.text,
-                  );
-                  if (_formKey.currentState.validate() &&
-                      shouldNavigate == true) {
+                press: () {
+                  // (
+                  //   cyclecontroller.text,
+                  //   bankAccountcontroller.text,
+                  //   Namecontroller.text,
+                  //   startingDatecontroller.text,
+                  //   poolAmountcontroller.text,
+                  //   addresscontroller.text,
+                  //   winAmountcontroller.text
+                  // );
+                  if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     KeyboardUtil.hideKeyboard(context);
-                    Navigator.pushNamed(context, GroupsScreen.routeName);
+                    _createIdir(context, Namecontroller.text);
                   } else {
-                    print("Error occurd while signing in");
+                    print("Error occurd while creating Idir");
                   }
                 }),
+            SizedBox(height: (40)),
           ],
         ),
       ),
@@ -132,7 +150,38 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
       },
       decoration: const InputDecoration(
         labelText: "Pool Amount",
-        hintText: "Amount of money pooled per member ",
+        hintText: "Amount of money pooled per cycle",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+    );
+  }
+
+  TextFormField buildBankAccountField() {
+    return TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      controller: bankAccountcontroller,
+      onSaved: (newValue) => bankAccount = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kEmailNullError);
+        } else if (emailValidatorRegExp.hasMatch(value)) {
+          removeError(error: kInvalidEmailError);
+        }
+        return null;
+      },
+      validator: (value) {
+        if (value.isEmpty) {
+          addError(error: kEmailNullError);
+          return "";
+        } else if (!emailValidatorRegExp.hasMatch(value)) {
+          addError(error: kInvalidEmailError);
+          return "";
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: "Bank Account",
+        hintText: "Enter your bank account number",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
@@ -157,10 +206,8 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
         },
         decoration: const InputDecoration(
           labelText: "Address",
-          hintText: "Enter the address",
+          hintText: "Enter your address",
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          //   suffixIcon:
-          //       CustomSurffixIcon(svgIcon: "assets/icons/Location point.svg"),
         ));
   }
 
@@ -182,7 +229,7 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
         return null;
       },
       decoration: const InputDecoration(
-        labelText: "Starting Date",
+        labelText: "Starting date",
         hintText: "Enter the starting date",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
@@ -209,64 +256,6 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
       decoration: const InputDecoration(
         labelText: "Name",
         hintText: "Enter the name of the Idir",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        // suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
-      ),
-    );
-  }
-
-  TextFormField buildCycleFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      controller: cyclecontroller,
-      onSaved: (newValue) => cycle = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kCycleNullError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kCycleNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Cycle",
-        hintText: "cycle eg weekly, monthly...",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
-  }
-
-  TextFormField buildBankAccountField() {
-    return TextFormField(
-      keyboardType: TextInputType.number,
-      controller: bankAcccontroller,
-      onSaved: (newValue) => bankAccount = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
-        } else if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kEmailNullError);
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Bank Account",
-        hintText: "Enter your bank account number",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );

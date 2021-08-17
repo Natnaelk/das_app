@@ -24,7 +24,22 @@ class _SignFormState extends State<SignForm> {
   TextEditingController passcontroller = TextEditingController();
   TextEditingController confirmcontroller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool shouldNavigate;
+
+  void _login(String email, String password, BuildContext context) async {
+    try {
+      String _returnString = await Auth().loginUserWithEmail(email, password);
+      if (_returnString == "success") {
+        Navigator.pushNamedAndRemoveUntil(
+            context, HomeScreen.routeName, (route) => false);
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text(_returnString),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {}
+  }
 
   String email;
   String password;
@@ -52,9 +67,9 @@ class _SignFormState extends State<SignForm> {
       child: Column(
         children: [
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: 30),
           buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: 30),
           Row(
             children: [
               Checkbox(
@@ -79,37 +94,15 @@ class _SignFormState extends State<SignForm> {
             ],
           ),
           FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(20)),
+          SizedBox(height: 20),
           DefaultButton(
             text: "Continue",
             press: () async {
-              shouldNavigate =
-                  await signIn(emailcontroller.text, passcontroller.text);
-              if (_formKey.currentState.validate() && shouldNavigate) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, HomeScreen.routeName, (route) => false);
-
+              if (_formKey.currentState.validate()) {
+                _login(emailcontroller.text, passcontroller.text, context);
                 _formKey.currentState.save();
-
                 KeyboardUtil.hideKeyboard(context);
-              } else {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("An error occured, please try again"),
-                    backgroundColor: kPrimaryColor));
-                //Navigator.pushNamed(context, SignInScreen.routeName);
               }
-              // try {
-              //   FirebaseAuth.instance.signInWithEmailAndPassword(
-              //       email: email, password: password);
-              // } catch (e) {
-              //   print(e);
-              //   var snackbar = SnackBar(
-              //       content: Text(
-              //     e.toString(),
-              //     style: TextStyle(fontSize: 20),
-              //   ));
-              //   Scaffold.of(context).showSnackBar(snackbar);
-              // }
             },
           ),
         ],

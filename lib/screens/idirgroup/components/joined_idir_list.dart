@@ -1,76 +1,87 @@
-import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/size_config.dart';
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/models/auth_model.dart';
+import 'package:das_app/screens/iqubgroup/roles/iqub_member_screen.dart';
+import 'package:das_app/services/database.dart';
 
-class JoinedIdir extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class JoinedIdir extends StatefulWidget {
   const JoinedIdir({
     Key key,
   }) : super(key: key);
 
   @override
+  State<JoinedIdir> createState() => _JoinedIdirState();
+}
+
+class _JoinedIdirState extends State<JoinedIdir> {
+  @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: <Widget>[
-          JoinedIdirsCard(
-            idirName: "yesetoch meredaja",
-            idirProPic: 'assets/images/savingimage.jpg',
-            idirType: "Daily",
-            PooledMoneyAmount: 100,
-          ),
-          JoinedIdirsCard(
-            idirName: "Wereda 8",
-            idirProPic: 'assets/images/insurancepic.jpg',
-            idirType: "Yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-          JoinedIdirsCard(
-            idirName: "Mercato Wetatoch",
-            idirProPic: 'assets/images/savingimage.jpg',
-            idirType: "yewendoch",
-            PooledMoneyAmount: 100,
-          ),
-          JoinedIdirsCard(
-            idirName: "hawassa 4th year",
-            idirProPic: 'assets/images/insurancepic.jpg',
-            idirType: "yesetoch",
-            PooledMoneyAmount: 1000,
-          ),
-        ]),
-      ),
-    ]);
+    AuthModel _authStream = Provider.of<AuthModel>(context);
+    String currentUid = _authStream.uid;
+    return StreamBuilder(
+        stream: DatabaseService()
+            .idirsCollection
+            .where("members", arrayContains: currentUid)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          //var iqub = snapshot.data;
+          if (!snapshot.hasData) {
+            return const Text('Loading...');
+          }
+          return InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => iqubMemberScreen()));
+            },
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data.docs.map((document) {
+                  return Center(
+                    child: JoinedIqubsCard(
+                      IqubName: document['idirName'],
+                      IqubProPic: 'assets/images/insurancepic.jpg',
+                      IqubType: 'Monthly',
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        });
   }
 }
 
-class JoinedIdirsCard extends StatelessWidget {
-  const JoinedIdirsCard({
+class JoinedIqubsCard extends StatelessWidget {
+  const JoinedIqubsCard({
     Key key,
-    @required this.idirName,
+    @required this.IqubName,
     @required this.PooledMoneyAmount,
-    @required this.idirType,
+    @required this.IqubType,
     @required this.press,
-    @required this.idirProPic,
+    @required this.IqubProPic,
   }) : super(key: key);
-  final String idirName;
-  final String idirProPic;
+  final String IqubName;
+  final String IqubProPic;
   final int PooledMoneyAmount;
-  final String idirType;
+  final String IqubType;
   final GestureTapCallback press;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: getProportionateScreenWidth(20)),
+      padding: const EdgeInsets.only(left: (20)),
       child: SizedBox(
-        width: getProportionateScreenWidth(150),
-        height: getProportionateScreenWidth(150),
+        width: (120),
+        height: (120),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: <Widget>[
                 Image.asset(
-                  idirProPic,
+                  IqubProPic,
                   fit: BoxFit.cover,
                 ),
                 Container(
@@ -79,32 +90,31 @@ class JoinedIdirsCard extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF343434).withOpacity(0.4),
-                        Color(0xFF343434).withOpacity(0.15),
+                        const Color(0xFF343434).withOpacity(0.4),
+                        const Color(0xFF343434).withOpacity(0.15),
                       ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(15),
-                      vertical: getProportionateScreenWidth(10)),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: (15), vertical: (10)),
                   child: Text.rich(TextSpan(
                       style: const TextStyle(
                         color: Colors.white,
                       ),
                       children: [
                         TextSpan(
-                          text: "$idirName\n",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenWidth(18),
+                          text: "$IqubName\n",
+                          style: const TextStyle(
+                            fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
-                            text: "$idirType $PooledMoneyAmount birr",
-                            style: TextStyle(
-                              fontSize: getProportionateScreenWidth(16),
+                            text: "$IqubType $PooledMoneyAmount birr",
+                            style: const TextStyle(
+                              fontSize: (16),
                               fontWeight: FontWeight.bold,
                             ))
                       ])),

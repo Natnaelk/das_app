@@ -1,104 +1,70 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/models/auth_model.dart';
+import 'package:das_app/services/database.dart';
+import 'package:das_app/services/db_stream.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'collections.dart';
 
-// final FirebaseAuth _firebaseAuth;
-// AuthService(this._firebaseAuth);
-// Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+class Auth {
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
-Future<bool> signIn(String email, String password) async {
-  try {
-    await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-    return true;
-  } catch (e) {
-    print(e);
-    return false;
+  Stream<AuthModel> get user {
+    return _auth.authStateChanges().map(
+          (User firebaseUser) => (firebaseUser != null)
+              ? AuthModel.fromFirebseUser(user: firebaseUser)
+              : null,
+        );
   }
-}
 
-Future<bool> signOut() async {
-  try {
-    await FirebaseAuth.instance.signOut();
-    return true;
-  } catch (e) {
-    print(e);
-    return false;
-  }
-}
-
-Future<bool> signUp(String email, String password, String firstName,
-    String lastName, var phoneno, String address) async {
-  try {
-    await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .then((signeduser) {
-      usercollection.doc(signeduser.user.uid).set({
-        'email': email,
-        'password': password,
-      });
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(signeduser.user.uid)
-          .set({
-        'uid': signeduser.user.uid,
-        'email': email,
-        'firstname': firstName,
-        'lastname': lastName,
-        'phonenumber': phoneno,
-        'address': address
-      });
-    });
-
-    return true;
-  } on FirebaseException catch (e) {
-    if (e.code == 'Weak-password') {
-      print("weak password");
-    } else if (e.code == 'email-already-in-use') {
-      print("email already in use");
+  Future<String> signOut() async {
+    String retVal = "error";
+    try {
+      await _auth.signOut();
+      retVal = "success";
+    } catch (e) {
+      print(e);
     }
-  } catch (e) {
-    print(e.toString());
-    return false;
+    return retVal;
+  }
+
+  Future<String> signUp(String email, String password, String address,
+      String phone, String firstname, String lastname) async {
+    String retVal = "error";
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User user = result.user;
+
+      await DatabaseService(uid: user.uid).updateUserData(
+        email,
+        address,
+        phone,
+        firstname,
+        lastname,
+      );
+      retVal = "success";
+    } on PlatformException catch (e) {
+      retVal = e.message;
+      print("hello");
+    } catch (e) {
+      retVal = e;
+      print(e);
+    }
+    return retVal;
+  }
+
+  Future<String> loginUserWithEmail(String email, String password) async {
+    String retVal = "error";
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      retVal = "success";
+    } on PlatformException catch (e) {
+      retVal = e.message;
+    } catch (e) {
+      retVal = e.message;
+      print(e);
+    }
+    return retVal;
   }
 }
-
-// Future<bool> completeProfile(String firstName, String lastName, int phoneNumber, String address) async {
-//   try {
-//     await FirebaseAuth.instance
-//         .createUserWithEmailAndPassword(first Name: firstName, lastName: lastName)
-//         .then((signeduser) {
-//       usercollection.doc(signeduser.user.uid).set({
-//         'email': email,
-//         'password': password,
-//         'uid': signeduser.user.uid,
-//       });
-//     });
-//     return true;
-//   } on FirebaseException catch (e) {
-//     if (e.code == 'Weak-password') {
-//       print("weak password");
-//     } else if (e.code == 'email-already-in-use') {
-//       print("email already in use");
-//     }
-//   } catch (e) {
-//     print(e.toString());
-//     return false;
-//   }
-// }
-
-// sign in with email and password
-// Future registerWithEmailandPassword(String email, String password) async {
-//   try {
-//     UserCredential result = await _auth.createUserWithEmailAndPassword(
-//         email: email, password: password);
-//     User user = result.user;
-//     return _userFromFirebaseUser(user);
-//   } catch (e) {
-//     print(e.toString());
-//     return null;
-//   }
-// }
-
-// register with email and pasdowrd
-// sign out

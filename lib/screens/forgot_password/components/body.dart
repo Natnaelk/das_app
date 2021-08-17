@@ -15,15 +15,14 @@ class Body extends StatelessWidget {
       width: double.infinity,
       child: SingleChildScrollView(
         child: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              SizedBox(height: SizeConfig.screenHeight * 0.04),
-              Text(
+              SizedBox(height: 60),
+              const Text(
                 "Forgot Password",
                 style: TextStyle(
-                  fontSize: getProportionateScreenWidth(28),
+                  fontSize: 28,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
@@ -32,7 +31,7 @@ class Body extends StatelessWidget {
                 "Please enter your email and we will send \nyou a link to return to your account",
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: SizeConfig.screenHeight * 0.1),
+              SizedBox(height: 100),
               ForgotPassForm(),
             ],
           ),
@@ -95,9 +94,9 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
           ),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: 30),
           FormError(errors: errors),
-          SizedBox(height: SizeConfig.screenHeight * 0.1),
+          SizedBox(height: 100),
           DefaultButton(
             text: "Continue",
             press: () {
@@ -106,7 +105,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
               }
             },
           ),
-          SizedBox(height: SizeConfig.screenHeight * 0.1),
+          SizedBox(height: 100),
           NoAccountText(),
         ],
       ),

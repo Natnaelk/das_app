@@ -1,11 +1,11 @@
 import 'package:das_app/helper/keyboard.dart';
+import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/groups/groups_screen.dart';
-import 'package:das_app/services/auth.dart';
+import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
-import 'package:das_app/components/custom_surfix_icon.dart';
 import 'package:das_app/components/default_button.dart';
 import 'package:das_app/components/form_error.dart';
-
+import 'package:provider/provider.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
@@ -17,19 +17,44 @@ class CreateIqubForm extends StatefulWidget {
 }
 
 class _CreateIqubFormState extends State<CreateIqubForm> {
-  TextEditingController emailcontroller = TextEditingController();
-  TextEditingController passcontroller = TextEditingController();
+  void _createIqub(BuildContext context, String iqubName) async {
+    try {
+      AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
+      String currentUid = _authStream.uid;
+      await DatabaseService().createIqub(currentUid, iqubName);
+      if (currentUid.isNotEmpty) {
+        Navigator.pushNamed(context, GroupsScreen.routeName);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("Iqub created successfully"),
+          duration: Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("error"),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  TextEditingController cyclecontroller = TextEditingController();
+  TextEditingController winAmountcontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
-  TextEditingController phonecontroller = TextEditingController();
+  TextEditingController poolAmountcontroller = TextEditingController();
   TextEditingController Namecontroller = TextEditingController();
   TextEditingController startingDatecontroller = TextEditingController();
+  TextEditingController bankAccountcontroller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   String Name;
   String startingDate;
   var Cycle;
   String address;
-  double winAmount;
+  var winAmount;
   String poolAmount;
   var bankAccount;
 
@@ -56,10 +81,9 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
       key: _formKey,
       child: Scaffold(
         body: ListView(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+          padding: EdgeInsets.symmetric(horizontal: (10)),
           children: [
-            SizedBox(height: SizeConfig.screenHeight * 0.04),
+            SizedBox(height: 60),
             Text(
               "Complete the form",
               style: headingStyle,
@@ -69,42 +93,42 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
               "Complete iqub details",
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: getProportionateScreenHeight(50)),
+            SizedBox(height: (50)),
             buildNameFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildstartingDateFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildPoolAmountField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildWinAmountField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildCycleFormField(),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: (30)),
             buildAddressFormField(),
-            SizedBox(height: getProportionateScreenHeight(20)),
+            SizedBox(height: (20)),
             FormError(errors: errors),
-            SizedBox(height: getProportionateScreenHeight(20)),
+            SizedBox(height: (20)),
             DefaultButton(
                 text: "Continue",
-                press: () async {
-                  bool shouldNavigate = await signUp(
-                    emailcontroller.text,
-                    passcontroller.text,
-                    Namecontroller.text,
-                    startingDatecontroller.text,
-                    phonecontroller.text,
-                    addresscontroller.text,
-                  );
-                  if (_formKey.currentState.validate() &&
-                      shouldNavigate == true) {
+                press: () {
+                  // (
+                  //   cyclecontroller.text,
+                  //   bankAccountcontroller.text,
+                  //   Namecontroller.text,
+                  //   startingDatecontroller.text,
+                  //   poolAmountcontroller.text,
+                  //   addresscontroller.text,
+                  //   winAmountcontroller.text
+                  // );
+                  if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     KeyboardUtil.hideKeyboard(context);
-                    Navigator.pushNamed(context, GroupsScreen.routeName);
+                    _createIqub(context, Namecontroller.text);
                   } else {
-                    print("Error occurd while signing in");
+                    print("Error occurd while creating iqub");
                   }
                 }),
-            SizedBox(height: getProportionateScreenHeight(40)),
+            SizedBox(height: (40)),
           ],
         ),
       ),
@@ -114,6 +138,7 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
   TextFormField buildPoolAmountField() {
     return TextFormField(
       obscureText: true,
+      controller: poolAmountcontroller,
       onSaved: (newValue) => poolAmount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -140,9 +165,9 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
 
   TextFormField buildWinAmountField() {
     return TextFormField(
-      keyboardType: TextInputType.emailAddress,
-      controller: emailcontroller,
-      onSaved: (newValue) => winAmount = newValue as double,
+      keyboardType: TextInputType.number,
+      controller: winAmountcontroller,
+      onSaved: (newValue) => winAmount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kEmailNullError);
@@ -172,7 +197,7 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
   TextFormField buildBankAccountField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      controller: emailcontroller,
+      controller: bankAccountcontroller,
       onSaved: (newValue) => bankAccount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -227,7 +252,7 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
   TextFormField buildCycleFormField() {
     return TextFormField(
       keyboardType: TextInputType.phone,
-      controller: phonecontroller,
+      controller: cyclecontroller,
       onSaved: (newValue) => Cycle = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {

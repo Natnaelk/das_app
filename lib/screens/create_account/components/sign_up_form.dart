@@ -10,6 +10,7 @@ import 'package:das_app/components/custom_surfix_icon.dart';
 import 'package:das_app/components/default_button.dart';
 import 'package:das_app/components/form_error.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -27,10 +28,27 @@ class _SignUpFormState extends State<SignUpForm> {
   TextEditingController firstnamecontroller = TextEditingController();
   TextEditingController lastnamecontroller = TextEditingController();
 
+  void _signUp(String email, String password, String address, String phone,
+      String firstName, String lastName, BuildContext context) async {
+    try {
+      String _returnString = await Auth()
+          .signUp(email, password, address, phone, firstName, lastName);
+      if (_returnString == "success") {
+        Navigator.pop(context);
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text(_returnString),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {}
+  }
+
   final _formKey = GlobalKey<FormState>();
   String firstName;
   String lastName;
-  var phoneNumber;
+  String phoneNumber;
   String address;
   String email;
   String password;
@@ -60,63 +78,41 @@ class _SignUpFormState extends State<SignUpForm> {
       child: Column(
         children: [
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildConformPassFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildAddressFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildFirstNameFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildLastNameFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           buildPhoneNumberFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: (30)),
           FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(40)),
+          SizedBox(height: (40)),
           DefaultButton(
               text: "Continue",
-              press: () async {
-                bool shouldNavigate = await signUp(
-                  emailcontroller.text,
-                  passcontroller.text,
-                  firstnamecontroller.text,
-                  lastnamecontroller.text,
-                  phonecontroller.text,
-                  addresscontroller.text,
-                );
-                if (_formKey.currentState.validate() &&
-                    shouldNavigate == true) {
+              press: () {
+                if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
+                  _signUp(
+                    emailcontroller.text,
+                    passcontroller.text,
+                    addresscontroller.text,
+                    phonecontroller.text,
+                    firstnamecontroller.text,
+                    lastnamecontroller.text,
+                    context,
+                  );
                   KeyboardUtil.hideKeyboard(context);
-                  Navigator.pushNamed(context, SignInScreen.routeName);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()),
+  );
                 } else {
                   print("Error occurd while signing in");
                 }
-                //     try {
-                //       FirebaseAuth.instance
-                //           .createUserWithEmailAndPassword(
-                //               email: email, password: password)
-                //           .then((signeduser) {
-                //         usercollection.doc(signeduser.user.uid).set({
-                //           'email': emailcontroller.text,
-                //           'password': passcontroller.text,
-                //           'uid': signeduser.user.uid,
-                //         });
-                //       });
-                //       Navigator.pushNamed(context, CompleteProfileScreen.routeName);
-                //     } catch (e) {
-                //       print(e);
-                //       var snackbar = SnackBar(
-                //           content: Text(
-                //         e.toString(),
-                //         style: TextStyle(fontSize: 20),
-                //       ));
-                //       Scaffold.of(context).showSnackBar(snackbar);
-                //     }
-                //   }
-                // },
               }),
         ],
       ),

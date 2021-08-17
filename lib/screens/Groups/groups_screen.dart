@@ -2,7 +2,7 @@ import 'package:das_app/components/custom_bottom_nav_bar.dart';
 import 'package:das_app/constants.dart';
 import 'package:das_app/enums.dart';
 import 'package:das_app/screens/Groups/components/body.dart';
-import 'package:das_app/screens/groups/components/search_field.dart';
+
 import 'package:das_app/screens/groups/components/tabbar.dart';
 import 'package:das_app/screens/idirgroup/idir_screen.dart';
 import 'package:das_app/screens/iqubgroup/iqub_screen.dart';

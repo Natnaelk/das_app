@@ -1,5 +1,4 @@
 import 'package:das_app/constants.dart';
-import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
 
 class DefaultButton extends StatelessWidget {
@@ -12,10 +11,9 @@ class DefaultButton extends StatelessWidget {
   final VoidCallback press;
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     return SizedBox(
         width: double.infinity,
-        height: getProportionateScreenHeight(56),
+        height: 56,
         child: FlatButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

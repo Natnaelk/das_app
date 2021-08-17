@@ -4,6 +4,7 @@ import 'package:das_app/components/no_account_text.dart';
 import 'package:das_app/constants.dart';
 import 'package:das_app/screens/home/home_screen.dart';
 import 'package:das_app/screens/sign_in/components/sign_form.dart';
+import 'package:das_app/services/auth.dart';
 import 'package:das_app/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class Body extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(children: <Widget>[
                   SizedBox(
-                    height: SizeConfig.screenHeight * 0.04,
+                    height: 20,
                   ),
                   const Text(
                     "Welcome Back",
@@ -41,13 +42,16 @@ class Body extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
-                    height: SizeConfig.screenHeight * 0.08,
+                    height: 40,
                   ),
                   SignForm(),
                   SizedBox(
-                    height: getProportionateScreenHeight(40),
+                    height: 30,
                   ),
-                  const NoAccountText()
+                  const NoAccountText(),
+                  SizedBox(
+                    height: 40,
+                  ),
                 ]),
               ),
             ))

@@ -11,20 +11,19 @@ class Body extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+          padding: EdgeInsets.symmetric(horizontal: (20)),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: SizeConfig.screenHeight * 0.04), // 4%
+                SizedBox(height: 60), // 4%
                 Text("Complete Profile", style: headingStyle),
                 const Text(
                   "Complete your details",
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: SizeConfig.screenHeight * 0.08),
+                SizedBox(height: 50),
                 SignUpForm(),
-                SizedBox(height: SizeConfig.screenHeight * 0.08),
+                SizedBox(height: 50),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.center,
                 //   children: [
@@ -42,7 +41,7 @@ class Body extends StatelessWidget {
                 //     ),
                 //   ],
                 // ),
-                SizedBox(height: getProportionateScreenHeight(20)),
+                SizedBox(height: (20)),
                 Text(
                   'By continuing you confirm that you agree \nwith our Term and Condition',
                   textAlign: TextAlign.center,

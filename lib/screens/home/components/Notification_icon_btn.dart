@@ -24,9 +24,9 @@ class NotificationIconBtn extends StatelessWidget {
       borderRadius: BorderRadius.circular(50),
       child: Stack(children: <Widget>[
         Container(
-          padding: EdgeInsets.all(getProportionateScreenWidth(12)),
-          height: getProportionateScreenWidth(46),
-          width: getProportionateScreenWidth(46),
+          padding: EdgeInsets.all(12),
+          height: 46,
+          width: 46,
           decoration: BoxDecoration(
             color: kSecondaryColor.withOpacity(0.1),
             shape: BoxShape.circle,
@@ -37,8 +37,8 @@ class NotificationIconBtn extends StatelessWidget {
           top: -1,
           right: 1,
           child: Container(
-            height: getProportionateScreenWidth(16),
-            width: getProportionateScreenWidth(16),
+            height: 16,
+            width: 16,
             decoration: BoxDecoration(
                 color: Colors.red,
                 shape: BoxShape.circle,
@@ -49,7 +49,7 @@ class NotificationIconBtn extends StatelessWidget {
             child: Center(
               child: Text("$numOfItems",
                   style: TextStyle(
-                      fontSize: getProportionateScreenWidth(13),
+                      fontSize: 13,
                       height: 1,
                       color: Colors.white,
                       fontWeight: FontWeight.w600)),

@@ -12,15 +12,14 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
             text,
             style: TextStyle(
-              fontSize: getProportionateScreenWidth(18),
+              fontSize: 18,
               color: Colors.black,
             ),
           ),

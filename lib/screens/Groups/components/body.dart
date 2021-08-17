@@ -1,4 +1,3 @@
-import 'package:das_app/screens/groups/components/search_field.dart';
 import 'package:das_app/screens/groups/components/tabbar.dart';
 import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +14,11 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
       SizedBox(
-        height: getProportionateScreenWidth(20),
+        height: (20),
       ),
       // SearchField(),
       SizedBox(
-        height: getProportionateScreenWidth(10),
+        height: (10),
       ),
       //GroupScreenTabBar(),
     ]);

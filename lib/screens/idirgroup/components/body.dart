@@ -1,3 +1,4 @@
+import 'package:das_app/screens/idirgroup/components/search_field.dart';
 import 'package:das_app/screens/idirgroup/components/create_idir_form.dart';
 import 'package:das_app/screens/idirgroup/components/created_idir_list.dart';
 import 'package:das_app/screens/idirgroup/components/joined_idir_list.dart';
@@ -14,12 +15,11 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+      padding: EdgeInsets.symmetric(horizontal: (10)),
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: getProportionateScreenWidth(10),
+            height: (20),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,14 +35,20 @@ class Body extends StatelessWidget {
           ),
           CreatedIdir(),
           SizedBox(
-            height: getProportionateScreenWidth(3),
+            height: (40),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text("Joined Idirs"),
               FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => IdirSearchField()),
+                    );
+                  },
                   color: kPrimaryColor,
                   child: Text("Join Idir")),
             ],
