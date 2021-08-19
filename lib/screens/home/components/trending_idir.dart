@@ -53,11 +53,11 @@ class _TrendingIdirState extends State<TrendingIdir> {
                 ),
               ),
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => idirAdminScreen(),
-                    ));
+                //   Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           //builder: (context) => idirAdminScreen(),
+                //           ));
               },
             )
           ]);

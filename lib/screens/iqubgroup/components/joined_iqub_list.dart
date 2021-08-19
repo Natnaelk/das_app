@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/screens/iqubgroup/roles/iqub_member_screen.dart';
+import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
 import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,7 @@ class _JoinedIqubState extends State<JoinedIqub> {
   @override
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context);
-    String currentUid = _authStream.uid;
+    String currentUid = _authStream.uid ?? '';
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("iqubs")

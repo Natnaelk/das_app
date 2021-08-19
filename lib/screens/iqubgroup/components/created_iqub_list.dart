@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/models/iqub_model.dart';
-import 'package:das_app/screens/iqubgroup/roles/iqub_admin_screen.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,8 +18,8 @@ class _CreatedIqubState extends State<CreatedIqub> {
   @override
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context);
-    final iqubs = Provider.of<List<IqubModel>>(context);
-    String currentUid = _authStream.uid;
+    // final iqubs = Provider.of<List<IqubModel>>(context);
+    String currentUid = _authStream.uid ?? '';
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("iqubs")
@@ -28,28 +28,32 @@ class _CreatedIqubState extends State<CreatedIqub> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Text('Loading...');
-          }
-
-          return InkWell(
-            child: SingleChildScrollView(
+          } else {
+            return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: snapshot.data.docs.map((document) {
-                  return Center(
-                    child: CreatedIqubsCard(
-                      IqubName: document['iqubName'],
-                      IqubProPic: 'assets/images/insurancepic.jpg',
-                      IqubType: 'Monthly',
+                  return InkWell(
+                    child: Center(
+                      child: CreatedIqubsCard(
+                        IqubName: document['iqubName'],
+                        IqubProPic: 'assets/images/insurancepic.jpg',
+                        IqubType: 'Monthly',
+                      ),
                     ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => iqubAdminScreen(
+                                    iqub: document['iqubId'],
+                                  )));
+                    },
                   );
                 }).toList(),
               ),
-            ),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => iqubAdminScreen()));
-            },
-          );
+            );
+          }
         });
   }
 }
@@ -97,8 +101,8 @@ class CreatedIqubsCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: (15), vertical: (10)),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: (15), vertical: (10)),
                   child: Text.rich(TextSpan(
                       style: const TextStyle(
                         color: Colors.white,
@@ -106,14 +110,14 @@ class CreatedIqubsCard extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: "$IqubName\n",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
                             text: "$IqubType $PooledMoneyAmount birr",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: (16),
                               fontWeight: FontWeight.bold,
                             ))

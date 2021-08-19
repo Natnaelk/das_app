@@ -11,6 +11,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('iqubs');
   final CollectionReference idirsCollection =
       FirebaseFirestore.instance.collection('idirs');
+  final CollectionReference requestCollection =
+      FirebaseFirestore.instance.collection('requests');
 
   Future updateUserData(
     String email,
@@ -27,6 +29,7 @@ class DatabaseService {
       'iqubs': [],
       'address': address,
       'phone': phone,
+      'uid': uid,
       // 'profilePic': ''
     });
   }
@@ -88,20 +91,61 @@ class DatabaseService {
     }
   }
 
-  List<IqubModel> _iqubListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((docs) {
-      return IqubModel(
-          id: docs.id,
-          name: docs.get('iqubname'),
-          members: List<String>.from(docs.get('members')),
-          type: docs.get('type'),
-          admin: docs.get('admin'),
-          pooledAmount: docs.get('pooledAmount'));
-    }).toList();
+  Future requestjoinIqub(String iqubId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+    String Admin = await iqubDocSnapshot.get('admin');
+    String iqubName = await iqubDocSnapshot.get('iqubName');
+    String SenderId = await userDocSnapshot.get('uid');
+    String SenderName = await userDocSnapshot.get('firstName');
+
+    DocumentReference requestDocRef = await requestCollection.add({
+      'iqubId': iqubId,
+      'iqubIcon': '',
+      'senderId': SenderId,
+      'receiver': [],
+      'senderName': SenderName,
+    });
+    DocumentSnapshot requestDocSnapshot = await requestDocRef.get();
+
+    List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
+
+    String requests = await requestDocSnapshot.id;
+
+    if (requests.contains(iqubId)) {
+      //print('hey');
+      await requestDocRef.update({
+        'iqubId': FieldValue.arrayRemove([iqubId])
+      });
+
+      await requestDocRef.update({
+        'senderId': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await requestDocRef.update({
+        'receiver': FieldValue.arrayUnion([Admin])
+      });
+    }
   }
 
-  Stream<List<IqubModel>> get iqubs {
-    return iqubsCollection.snapshots().map(_iqubListFromSnapshot);
+  IqubModel _iqubListFromSnapshot(DocumentSnapshot snapshot) {
+    return IqubModel(
+        id: uid,
+        name: snapshot.get('iqubname'),
+        members: List<String>.from(snapshot.get('members')),
+        type: snapshot.get('type'),
+        admin: snapshot.get('admin'),
+        pooledAmount: snapshot.get('pooledAmount'));
+  }
+
+  Future<List<IqubModel>> get iqubs {
+    return iqubsCollection
+        .doc(uid)
+        .snapshots()
+        .map(_iqubListFromSnapshot)
+        .toList();
   }
 
   Future createIdir(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/screens/iqubgroup/roles/iqub_admin_screen.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,11 +53,11 @@ class _TrendingIqubState extends State<TrendingIqub> {
                 ),
               ),
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => iqubAdminScreen(),
-                    ));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         // builder: (context) => iqubAdminScreen(),
+                //         ));
               },
             )
           ]);

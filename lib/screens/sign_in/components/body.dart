@@ -20,6 +20,9 @@ class Body extends StatelessWidget {
     return ListView(
       children: <Widget>[
         SizedBox(
+          height: 35,
+        ),
+        SizedBox(
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

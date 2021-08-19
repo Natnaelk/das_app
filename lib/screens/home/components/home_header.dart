@@ -1,4 +1,5 @@
 import 'package:das_app/screens/home/components/Notification_icon_btn.dart';
+import 'package:das_app/screens/home/components/notification_list.dart';
 import 'package:das_app/screens/home/search_field.dart';
 import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,12 @@ class HomeHeader extends StatelessWidget {
             NotificationIconBtn(
               svgSrc: "assets/icons/Bell.svg",
               numOfItems: 3,
-              press: () {},
+              press: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationList()));
+              },
             ),
           ],
         ));

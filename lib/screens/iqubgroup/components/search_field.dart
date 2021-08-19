@@ -15,11 +15,14 @@ class IqubSearchField extends StatefulWidget {
 }
 
 class _IqubSearchFieldState extends State<IqubSearchField> {
-  void _joinIqub(BuildContext context, String groupId) async {
+  void _requestjoinIqub(BuildContext context, String groupId) async {
     try {
       AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
       String currentUid = _authStream.uid;
-      await DatabaseService().joinIqub(groupId, currentUid);
+      await DatabaseService().requestjoinIqub(
+        groupId,
+        currentUid,
+      );
       if (currentUid.isNotEmpty) {
         Navigator.pushNamed(context, GroupsScreen.routeName);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -80,7 +83,7 @@ class _IqubSearchFieldState extends State<IqubSearchField> {
                 FlatButton(
                   color: kPrimaryColor,
                   onPressed: () {
-                    _joinIqub(context, infoOfIqub.text);
+                    _requestjoinIqub(context, infoOfIqub.text);
                   },
                   child: Text('join'),
                 )
