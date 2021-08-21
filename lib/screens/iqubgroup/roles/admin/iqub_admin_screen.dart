@@ -3,18 +3,28 @@ import 'package:das_app/constants.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/iqub_drawer_navigation.dart';
 import 'package:flutter/material.dart';
 
-class iqubAdminScreen extends StatelessWidget {
+class iqubAdminScreen extends StatefulWidget {
   String iqub;
-  iqubAdminScreen({this.iqub});
+  List members;
+  iqubAdminScreen({this.iqub, this.members});
 
   @override
+  State<iqubAdminScreen> createState() => _iqubAdminScreenState();
+}
+
+class _iqubAdminScreenState extends State<iqubAdminScreen> {
+  @override
   Widget build(BuildContext context) {
+    setState(() {
+      FirebaseFirestore.instance.collection('users');
+    });
     return Scaffold(
       body: Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("iqubs")
-                .where("iqubId", isEqualTo: iqub)
+                .where("iqubId", isEqualTo: widget.iqub)
+                .limit(1)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -22,7 +32,10 @@ class iqubAdminScreen extends StatelessWidget {
                 return Text('Loading...');
               } else {
                 return Scaffold(
-                  drawer: IqubDrawer(iqub: iqub),
+                  drawer: IqubDrawer(
+                    iqub: widget.iqub,
+                    members: widget.members,
+                  ),
                   appBar: AppBar(
                     title: const Text('Admin Page'),
                   ),

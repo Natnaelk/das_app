@@ -6,19 +6,37 @@ import 'package:provider/provider.dart';
 
 import '../iqub_drawer_navigation.dart';
 
-class AdminrequestsPage extends StatelessWidget {
-  const AdminrequestsPage({Key key}) : super(key: key);
+class AdminrequestsPage extends StatefulWidget {
+  String iqubId;
+  List members;
+  AdminrequestsPage({this.iqubId, this.members});
 
   @override
+  State<AdminrequestsPage> createState() => _AdminrequestsPageState();
+}
+
+class _AdminrequestsPageState extends State<AdminrequestsPage> {
+  @override
   Widget build(BuildContext context) {
+    setState(() {
+      FirebaseFirestore.instance.collection('users');
+    });
     AuthModel _authStream = Provider.of<AuthModel>(context);
-    // final iqubs = Provider.of<List<IqubModel>>(context);
+
     String currentUid = _authStream.uid;
     return Scaffold(
+      drawer: IqubDrawer(
+        iqub: widget.iqubId,
+        members: widget.members,
+      ),
+      appBar: AppBar(
+        title: Text('requests'),
+      ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection("requests")
               .where("receiver", arrayContains: currentUid)
+              .where("iqubId", isEqualTo: widget.iqubId)
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -56,6 +74,7 @@ class AdminrequestsPage extends StatelessWidget {
                             builder: (context) => RequestList(
                                   senderId: document['senderId'] ?? '',
                                   iqubId: document['iqubId'] ?? '',
+                                  requestId: document['requestId'] ?? '',
                                 )));
                   },
                 );

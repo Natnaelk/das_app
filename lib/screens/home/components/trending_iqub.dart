@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/components/section_title.dart';
+import 'package:das_app/screens/iqubgroup/components/iqub_details_screen.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
@@ -20,15 +21,12 @@ class _TrendingIqubState extends State<TrendingIqub> {
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context);
     String currentUid = _authStream.uid;
-    String currentName = '';
     return StreamBuilder(
         stream: DatabaseService()
             .iqubsCollection
-            .where('iqubName', isNotEqualTo: currentName)
+            .where('admin', isNotEqualTo: currentUid)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //var iqub = snapshot.data;
-          // final iqub = snapshot.data.docs;
           if (!snapshot.hasData) {
             return const Text('Loading...');
           }
@@ -37,29 +35,30 @@ class _TrendingIqubState extends State<TrendingIqub> {
               text: "Trending iqubs",
               press: () {},
             ),
-            SizedBox(height: 20),
-            InkWell(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: snapshot.data.docs.map((document) {
-                    return Center(
-                        child: TrendingiqubsCard(
-                      iqubName: document['iqubName'],
-                      iqubProPic: 'assets/images/insurancepic.jpg',
-                      iqubType: 'Monthly',
-                    ));
-                  }).toList(),
-                ),
+            const SizedBox(height: 20),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data.docs.map((document) {
+                  return InkWell(
+                      child: Center(
+                          child: TrendingiqubsCard(
+                        iqubName: document['iqubName'],
+                        iqubProPic: 'assets/images/insurancepic.jpg',
+                        iqubType: 'Monthly',
+                      )),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => iqubDetailsScreen(
+                                iqubid: document['iqubId'],
+                              ),
+                            ));
+                      });
+                }).toList(),
               ),
-              onTap: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         // builder: (context) => iqubAdminScreen(),
-                //         ));
-              },
-            )
+            ),
           ]);
         });
   }

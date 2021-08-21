@@ -20,15 +20,12 @@ class _TrendingIdirState extends State<TrendingIdir> {
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context);
     String currentUid = _authStream.uid;
-    String currentName = '';
     return StreamBuilder(
         stream: DatabaseService()
             .idirsCollection
-            .where('idirName', isNotEqualTo: currentName)
+            .where('admin', isNotEqualTo: currentUid)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //var Idir = snapshot.data;
-          // final Idir = snapshot.data.docs;
           if (!snapshot.hasData) {
             return const Text('Loading...');
           }

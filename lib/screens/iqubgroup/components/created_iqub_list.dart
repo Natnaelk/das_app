@@ -34,22 +34,22 @@ class _CreatedIqubState extends State<CreatedIqub> {
               child: Row(
                 children: snapshot.data.docs.map((document) {
                   return InkWell(
-                    child: Center(
-                      child: CreatedIqubsCard(
-                        IqubName: document['iqubName'],
-                        IqubProPic: 'assets/images/insurancepic.jpg',
-                        IqubType: 'Monthly',
+                      child: Center(
+                        child: CreatedIqubsCard(
+                          IqubName: document['iqubName'],
+                          IqubProPic: 'assets/images/insurancepic.jpg',
+                          IqubType: 'Monthly',
+                        ),
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => iqubAdminScreen(
-                                    iqub: document['iqubId'],
-                                  )));
-                    },
-                  );
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => iqubAdminScreen(
+                                      iqub: document['iqubId'],
+                                      members: document['members'],
+                                    )));
+                      });
                 }).toList(),
               ),
             );

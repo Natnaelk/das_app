@@ -1,35 +1,75 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/components/add_member.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/components/delete.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/iqub_drawer_navigation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../constants.dart';
 
-class AdminmembersPage extends StatelessWidget {
+class AdminmembersPage extends StatefulWidget {
   String iqubId;
-
-  AdminmembersPage({this.iqubId});
+  List members;
+  AdminmembersPage({this.iqubId, this.members});
 
   @override
+  State<AdminmembersPage> createState() => _AdminmembersPageState();
+}
+
+class _AdminmembersPageState extends State<AdminmembersPage> {
+  @override
   Widget build(BuildContext context) {
+    setState(() {
+      FirebaseFirestore.instance.collection('users');
+    });
+    // int len = widget.members.length;
     return Scaffold(
       body: Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("users")
-                .where("iqubs", arrayContains: iqubId)
+                .where("iqubs", arrayContains: widget.iqubId)
+                .orderBy('firstName')
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
-                return Text('Loading...');
+                return Center(child: Text('Loading...'));
               }
               return Scaffold(
+                drawer: IqubDrawer(
+                  iqub: widget.iqubId,
+                  members: widget.members,
+                ),
                 appBar: AppBar(
                   title: Text('Members'),
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AdminAddMembersPage(
+                                  iqubid: widget.iqubId,
+                                  members: widget.members,
+                                )));
+                      },
+                      icon: Icon(Icons.add),
+                      color: kPrimaryColor,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AdminDeleteMemberPage(
+                                  iqubid: widget.iqubId,
+                                  members: widget.members,
+                                )));
+                      },
+                      icon: Icon(Icons.delete),
+                      color: kPrimaryColor,
+                    ),
+                  ],
                 ),
                 body: ListView(
                   children: snapshot.data.docs.map((document) {
-                    print(iqubId);
+                    print(widget.iqubId);
                     return Column(children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

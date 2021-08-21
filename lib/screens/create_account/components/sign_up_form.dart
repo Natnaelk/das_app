@@ -34,7 +34,16 @@ class _SignUpFormState extends State<SignUpForm> {
       String _returnString = await Auth()
           .signUp(email, password, address, phone, firstName, lastName);
       if (_returnString == "success") {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("Account Created Successfully!"),
+          duration: Duration(seconds: 2),
+        ));
         Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
+        );
       } else {
         Scaffold.of(context).showSnackBar(SnackBar(
           backgroundColor: kPrimaryColor,
@@ -108,10 +117,6 @@ class _SignUpFormState extends State<SignUpForm> {
                     context,
                   );
                   KeyboardUtil.hideKeyboard(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()),
-  );
-                } else {
-                  print("Error occurd while signing in");
                 }
               }),
         ],

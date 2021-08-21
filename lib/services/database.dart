@@ -63,11 +63,12 @@ class DatabaseService {
     return retVal;
   }
 
-  Future joinIqub(String iqubId, String uid) async {
+  Future joinIqub(String iqubId, String uid, String requestId) async {
     DocumentReference userDocRef = usersCollection.doc(uid);
     DocumentSnapshot userDocSnapshot = await userDocRef.get();
 
     DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentReference requestDocRef = requestCollection.doc(requestId);
 
     List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
 
@@ -81,6 +82,7 @@ class DatabaseService {
         'members': FieldValue.arrayRemove([uid])
       });
     } else {
+      await requestDocRef.delete();
       await userDocRef.update({
         'iqubs': FieldValue.arrayUnion([iqubId])
       });
@@ -100,15 +102,17 @@ class DatabaseService {
     String iqubName = await iqubDocSnapshot.get('iqubName');
     String SenderId = await userDocSnapshot.get('uid');
     String SenderName = await userDocSnapshot.get('firstName');
+    DocumentReference requestDocRef = requestCollection.doc();
+    DocumentSnapshot requestDocSnapshot = await requestDocRef.get();
 
-    DocumentReference requestDocRef = await requestCollection.add({
+    requestDocRef = await requestCollection.add({
       'iqubId': iqubId,
       'iqubIcon': '',
       'senderId': SenderId,
       'receiver': [],
       'senderName': SenderName,
+      'requestId': [],
     });
-    DocumentSnapshot requestDocSnapshot = await requestDocRef.get();
 
     List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
 
@@ -124,29 +128,100 @@ class DatabaseService {
         'senderId': FieldValue.arrayRemove([uid])
       });
     } else {
+      await requestDocRef.update({'requestId': requestDocRef.id});
       await requestDocRef.update({
         'receiver': FieldValue.arrayUnion([Admin])
       });
     }
   }
 
-  IqubModel _iqubListFromSnapshot(DocumentSnapshot snapshot) {
-    return IqubModel(
-        id: uid,
-        name: snapshot.get('iqubname'),
-        members: List<String>.from(snapshot.get('members')),
-        type: snapshot.get('type'),
-        admin: snapshot.get('admin'),
-        pooledAmount: snapshot.get('pooledAmount'));
+  Future deleteIqub(String iqubId) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
+
+    await userDocRef.update({
+      'iqubs': FieldValue.arrayRemove([iqubId])
+    });
+
+    await iqubDocRef.update({
+      'members': FieldValue.arrayRemove([uid])
+    });
+
+    await FirebaseFirestore.instance.collection('iqubs').doc(iqubId).delete();
   }
 
-  Future<List<IqubModel>> get iqubs {
-    return iqubsCollection
-        .doc(uid)
-        .snapshots()
-        .map(_iqubListFromSnapshot)
-        .toList();
+  Future addUserToIqub(String iqubId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    String retVal = 'none';
+    List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
+    if (iqubs.contains(iqubId)) {
+      //print('hey');
+      retVal = 'error';
+      // await userDocRef.update({
+      //   'iqubs': FieldValue.arrayRemove([iqubId])
+      // });
+
+      // await iqubDocRef.update({
+      //   'members': FieldValue.arrayRemove([uid])
+      // });
+    } else {
+      retVal = 'success';
+      await userDocRef.update({
+        'iqubs': FieldValue.arrayUnion([iqubId])
+      });
+
+      await iqubDocRef.update({
+        'members': FieldValue.arrayUnion([uid])
+      });
+    }
+    return retVal;
   }
+
+  Future deleteUserFromIqub(String iqubId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    String retVal = 'none';
+    List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
+    if (iqubs.contains(iqubId)) {
+      //print('hey');
+      retVal = 'success';
+      await userDocRef.update({
+        'iqubs': FieldValue.arrayRemove([iqubId])
+      });
+
+      await iqubDocRef.update({
+        'members': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      retVal = 'error';
+    }
+    return retVal;
+  }
+
+  // IqubModel _iqubListFromSnapshot(DocumentSnapshot snapshot) {
+  //   return IqubModel(
+  //       id: uid,
+  //       name: snapshot.get('iqubname'),
+  //       members: List<String>.from(snapshot.get('members')),
+  //       type: snapshot.get('type'),
+  //       admin: snapshot.get('admin'),
+  //       pooledAmount: snapshot.get('pooledAmount'));
+  // }
+
+  // Future<List<IqubModel>> get iqubs {
+  //   return iqubsCollection
+  //       .doc(uid)
+  //       .snapshots()
+  //       .map(_iqubListFromSnapshot)
+  //       .toList();
+  // }
 
   Future createIdir(
     String uid,

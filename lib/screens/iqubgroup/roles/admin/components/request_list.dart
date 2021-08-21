@@ -6,22 +6,26 @@ import 'package:flutter/material.dart';
 
 import '../../../../../constants.dart';
 
-class RequestList extends StatelessWidget {
+class RequestList extends StatefulWidget {
   String senderId;
   String iqubId;
+  String requestId;
 
-  RequestList({Key key, this.senderId, this.iqubId}) : super(key: key);
+  RequestList({Key key, this.senderId, this.iqubId, this.requestId})
+      : super(key: key);
 
-  void _acceptMember(
-      BuildContext context, String iqubId, String senderid) async {
+  @override
+  State<RequestList> createState() => _RequestListState();
+}
+
+class _RequestListState extends State<RequestList> {
+  void _acceptMember(BuildContext context, String iqubId, String senderid,
+      String status) async {
     try {
-      await DatabaseService().joinIqub(
-        iqubId,
-        senderid,
-      );
+      await DatabaseService().joinIqub(iqubId, senderid, status);
       if (senderid.isNotEmpty && iqubId.isNotEmpty) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => AdminmembersPage()));
+        Navigator.pop(context);
+
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: kPrimaryColor,
           content: Text("Member Accepted successfuly"),
@@ -45,17 +49,23 @@ class RequestList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      setState(() {
+        FirebaseFirestore.instance.collection('users');
+      });
+    });
     return Scaffold(
       body: Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("users")
-                .where("uid", isEqualTo: senderId)
+                .where("uid", isEqualTo: widget.senderId)
+                .where("iqubs", isNotEqualTo: widget.iqubId)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
-                return Text('Loading...');
+                return Center(child: Text('Loadinggg...'));
               }
               return Scaffold(
                 appBar: AppBar(
@@ -121,7 +131,8 @@ class RequestList extends StatelessWidget {
                         children: <Widget>[
                           FlatButton(
                             onPressed: () {
-                              _acceptMember(context, iqubId, senderId);
+                              _acceptMember(context, widget.iqubId,
+                                  widget.senderId, widget.requestId);
                             },
                             color: Colors.green,
                             child: Text(
@@ -132,10 +143,7 @@ class RequestList extends StatelessWidget {
                           Padding(padding: EdgeInsets.only(left: 40)),
                           FlatButton(
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          AdminmembersPage()));
+                              Navigator.pop(context);
                             },
                             color: Colors.red,
                             child: Text(
