@@ -1,13 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/constants.dart';
-import 'package:das_app/screens/iqubgroup/roles/member/components/members_page.dart';
+import 'package:das_app/screens/iqubgroup/roles/member/components/leave_page.dart';
+import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
 import 'package:flutter/material.dart';
+import '../member/components/payment_page.dart';
+import 'components/members_page.dart';
 import 'components/payment_page.dart';
-import 'components/leave_page.dart';
-import 'iqub_member_screen.dart';
 
-class IqubMemberDrawer extends StatelessWidget {
-  const IqubMemberDrawer({Key key}) : super(key: key);
+class IqubMemberDrawer extends StatefulWidget {
+  String iqub;
+  List members;
 
+  IqubMemberDrawer({this.iqub, this.members});
+
+  @override
+  State<IqubMemberDrawer> createState() => _IqubDrawerState();
+}
+
+class _IqubDrawerState extends State<IqubMemberDrawer> {
+  @override
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -19,22 +30,22 @@ class IqubMemberDrawer extends StatelessWidget {
         buildMenuItem(
           text: 'Home',
           icon: Icons.home,
-          press: () => SelectedItem(context, 0),
+          press: () => SelectedItem(context, 0, widget.iqub, widget.members),
         ),
         buildMenuItem(
           text: 'members',
           icon: Icons.people,
-          press: () => SelectedItem(context, 1),
+          press: () => SelectedItem(context, 1, widget.iqub, widget.members),
         ),
         buildMenuItem(
           text: 'payment',
           icon: Icons.message,
-          press: () => SelectedItem(context, 2),
+          press: () => SelectedItem(context, 2, widget.iqub, widget.members),
         ),
         buildMenuItem(
-          text: 'leave iqub',
-          icon: Icons.leave_bags_at_home,
-          press: () => SelectedItem(context, 2),
+          text: 'leave',
+          icon: Icons.payment,
+          press: () => SelectedItem(context, 3, widget.iqub, widget.members),
         ),
       ]),
     ));
@@ -54,24 +65,33 @@ Widget buildMenuItem(
   );
 }
 
-void SelectedItem(BuildContext context, int index) {
+void SelectedItem(BuildContext context, int index, String iqub, List members) {
   Navigator.pop(context);
+
   switch (index) {
     case 0:
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => iqubMemberScreen()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => iqubMemberScreen(
+                iqub: iqub,
+                members: members,
+              )));
       break;
     case 1:
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MembersPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) =>
+              ViewMembersPage(iqubId: iqub, members: members)));
       break;
+
     case 2:
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MemberpaymentPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) =>
+              MemberpaymentPage(iqubId: iqub, members: members)));
       break;
+
     case 3:
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MemberLeavePage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) =>
+              MemberLeavePage(iqubId: iqub, members: members)));
       break;
   }
 }

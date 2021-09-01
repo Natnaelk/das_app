@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/screens/home/components/section_title.dart';
 import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
-import 'package:das_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,27 +27,32 @@ class _JoinedIqubState extends State<JoinedIqub> {
           //var iqub = snapshot.data;
           if (!snapshot.hasData) {
             return Text('Loading...');
-          }
-          return InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => iqubMemberScreen()));
-            },
-            child: SingleChildScrollView(
+          } else {
+            return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: snapshot.data.docs.map((document) {
-                  return Center(
-                    child: JoinedIqubsCard(
-                      IqubName: document['iqubName'],
-                      IqubProPic: 'assets/images/insurancepic.jpg',
-                      IqubType: 'Monthly',
-                    ),
-                  );
+                  return InkWell(
+                      child: Center(
+                        child: JoinedIqubsCard(
+                          IqubName: document['iqubName'],
+                          IqubProPic: 'assets/images/insurancepic.jpg',
+                          IqubType: 'Monthly',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => iqubMemberScreen(
+                                      iqub: document['iqubId'],
+                                      members: document['members'],
+                                    )));
+                      });
                 }).toList(),
               ),
-            ),
-          );
+            );
+          }
         });
   }
 }
@@ -72,7 +75,7 @@ class JoinedIqubsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: (20)),
+      padding: const EdgeInsets.only(left: (20)),
       child: SizedBox(
         width: (120),
         height: (120),
@@ -90,15 +93,15 @@ class JoinedIqubsCard extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF343434).withOpacity(0.4),
-                        Color(0xFF343434).withOpacity(0.15),
+                        const Color(0xFF343434).withOpacity(0.4),
+                        const Color(0xFF343434).withOpacity(0.15),
                       ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: (15), vertical: (10)),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: (15), vertical: (10)),
                   child: Text.rich(TextSpan(
                       style: const TextStyle(
                         color: Colors.white,
@@ -106,14 +109,14 @@ class JoinedIqubsCard extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: "$IqubName\n",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
                             text: "$IqubType $PooledMoneyAmount birr",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: (16),
                               fontWeight: FontWeight.bold,
                             ))

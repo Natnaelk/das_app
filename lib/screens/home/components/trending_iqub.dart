@@ -53,6 +53,7 @@ class _TrendingIqubState extends State<TrendingIqub> {
                             MaterialPageRoute(
                               builder: (context) => iqubDetailsScreen(
                                 iqubid: document['iqubId'],
+                                uid: currentUid,
                               ),
                             ));
                       });

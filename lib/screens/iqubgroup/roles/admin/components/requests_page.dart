@@ -41,7 +41,7 @@ class _AdminrequestsPageState extends State<AdminrequestsPage> {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
-              return Text('Loading...');
+              return Center(child: Text('Loading...'));
             }
 
             return Card(

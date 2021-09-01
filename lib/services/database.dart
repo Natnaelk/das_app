@@ -13,6 +13,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('idirs');
   final CollectionReference requestCollection =
       FirebaseFirestore.instance.collection('requests');
+  final CollectionReference paymentCollection =
+      FirebaseFirestore.instance.collection('payment');
 
   Future updateUserData(
     String email,
@@ -34,12 +36,10 @@ class DatabaseService {
     });
   }
 
-  Future createIqub(
-    String uid,
-    String iqubName,
-  ) async {
+  Future createIqub(String uid, String iqubName) async {
     String retVal = "error";
     try {
+      retVal = "success";
       DocumentReference iqubDocRef = await iqubsCollection.add({
         'iqubName': iqubName,
         'iqubIcon': '',
@@ -58,7 +58,7 @@ class DatabaseService {
         'iqubs': FieldValue.arrayUnion([iqubDocRef.id + '_' + iqubName])
       });
     } catch (e) {
-      print(e);
+      retVal = "error";
     }
     return retVal;
   }
@@ -82,7 +82,7 @@ class DatabaseService {
         'members': FieldValue.arrayRemove([uid])
       });
     } else {
-      await requestDocRef.delete();
+      requestDocRef.delete();
       await userDocRef.update({
         'iqubs': FieldValue.arrayUnion([iqubId])
       });
@@ -135,21 +135,60 @@ class DatabaseService {
     }
   }
 
-  Future deleteIqub(String iqubId) async {
+  Future<bool> isUserJoined(String iqubId, String uid) async {
     DocumentReference userDocRef = usersCollection.doc(uid);
     DocumentSnapshot userDocSnapshot = await userDocRef.get();
-    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+
     List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
 
-    await userDocRef.update({
-      'iqubs': FieldValue.arrayRemove([iqubId])
-    });
+    if (iqubs.contains(iqubId)) {
+      //print('he');
+      return true;
+    } else {
+      //print('ne');
+      return false;
+    }
+  }
 
-    await iqubDocRef.update({
-      'members': FieldValue.arrayRemove([uid])
-    });
+  searchByName(String iqubName) {
+    return FirebaseFirestore.instance
+        .collection("iqubs")
+        .where('iqubName', isEqualTo: iqubName)
+        .get();
+  }
 
-    await FirebaseFirestore.instance.collection('iqubs').doc(iqubId).delete();
+  Future leaveIqub(String iqubId, String currentUser) async {
+    DocumentReference userDocRef = usersCollection.doc(currentUser);
+    // DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+    List<dynamic> iqubs = await iqubDocSnapshot.get('members');
+
+    if (iqubs.contains(currentUser)) {
+      await userDocRef.update({
+        'iqubs': FieldValue.arrayRemove([iqubId])
+      });
+      await iqubDocRef.update({
+        'members': FieldValue.arrayRemove([currentUser])
+      });
+    } else {
+      print('error');
+    }
+  }
+
+  Future deleteIqub(String iqubId) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    // DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    var docref = FirebaseFirestore.instance.collection('iqubs').doc(iqubId);
+    // List<dynamic> iqubs = await userDocSnapshot.get('iqubs');
+    docref.delete();
+    // if (iqubs.contains(iqubId)) {
+    //   await userDocRef.update({
+    //     'iqubs': FieldValue.arrayRemove([iqubId])
+    //   });
+    // } else {
+    //   print('user not found');
+    // }
   }
 
   Future addUserToIqub(String iqubId, String uid) async {
@@ -205,6 +244,54 @@ class DatabaseService {
     return retVal;
   }
 
+  Future savePaymentInfo(String iqubId, String uid, String downloadUrl) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+    String Admin = await iqubDocSnapshot.get('admin');
+    String iqubName = await iqubDocSnapshot.get('iqubName');
+    String SenderId = await userDocSnapshot.get('uid');
+    String SenderName = await userDocSnapshot.get('firstName');
+    DocumentReference paymentDocRef = paymentCollection.doc();
+    DocumentSnapshot paymentDocSnapshot = await paymentDocRef.get();
+    int accepted = 0;
+    paymentDocRef = await paymentCollection.add({
+      'iqubId': iqubId,
+      'accepted': accepted,
+      'senderId': SenderId,
+      'receiver': '',
+      'image': downloadUrl,
+      'senderName': SenderName,
+      'paymentId': [],
+    });
+
+    String payments = await paymentDocSnapshot.id;
+
+    if (payments.contains(iqubId)) {
+      //print('hey');
+      await paymentDocRef.update({
+        'iqubId': FieldValue.arrayRemove([iqubId])
+      });
+
+      await paymentDocRef.update({
+        'senderId': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await paymentDocRef.update({'paymentId': paymentDocRef.id});
+      await paymentDocRef.update({'receiver': Admin});
+    }
+  }
+
+  Future acceptPayment(String paymentId) async {
+    DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
+    await paymentDocRef.update({'accepted': 1});
+  }
+
+  Future rejectPayment(String paymentId) async {
+    DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
+    await paymentDocRef.update({'accepted': 2});
+  }
   // IqubModel _iqubListFromSnapshot(DocumentSnapshot snapshot) {
   //   return IqubModel(
   //       id: uid,

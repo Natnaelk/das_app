@@ -2,21 +2,43 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/home_screen.dart';
 import 'package:das_app/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
-class iqubDetailsScreen extends StatelessWidget {
+class iqubDetailsScreen extends StatefulWidget {
   String iqubid;
-  iqubDetailsScreen({this.iqubid});
+  String uid;
+  iqubDetailsScreen({this.iqubid, this.uid});
+
+  @override
+  State<iqubDetailsScreen> createState() => _iqubDetailsScreenState();
+}
+
+class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
+  bool _isJoined = false;
+  _joinValueInGroup(uid, iqubId) async {
+    bool value = await DatabaseService(uid: uid).isUserJoined(iqubId, uid);
+    setState(() {
+      _isJoined = value;
+    });
+  }
+
+  @override
+  void initState() {
+    _joinValueInGroup(widget.uid, widget.iqubid);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
+    String currentUid = _authStream.uid;
+
     void _requestjoinIqub(BuildContext context, String groupId) async {
       try {
-        AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
-        String currentUid = _authStream.uid;
         await DatabaseService().requestjoinIqub(
           groupId,
           currentUid,
@@ -44,22 +66,18 @@ class iqubDetailsScreen extends StatelessWidget {
       }
     }
 
-    AuthModel _authStream = Provider.of<AuthModel>(context);
-    String currentUid = _authStream.uid;
     return Scaffold(
       body: Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("iqubs")
-                .where("iqubId", isEqualTo: iqubid)
+                .where("iqubId", isEqualTo: widget.iqubid)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Text('Loading...');
               } else {
-                print(iqubid);
-                print(currentUid);
                 return Scaffold(
                   body: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -91,18 +109,23 @@ class iqubDetailsScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        FlatButton(
-                          onPressed: () {
-                            _requestjoinIqub(context, iqubid);
-                          },
-                          color: kPrimaryColor,
-                          height: 40,
-                          minWidth: 80,
-                          child: Text(
-                            'Join Iqub',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                        if (_isJoined)
+                          Text('you are already a member of this iqub')
+                        else
+                          Center(
+                            child: FlatButton(
+                              onPressed: () {
+                                _requestjoinIqub(context, widget.iqubid);
+                              },
+                              color: kPrimaryColor,
+                              height: 40,
+                              minWidth: 80,
+                              child: Text(
+                                'Join Iqub',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          )
                       ]);
                     }).toList(),
                   ),

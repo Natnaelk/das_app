@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/constants.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/components/draw_lot.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/components/members_page.dart';
 import 'package:flutter/material.dart';
 import '../member/components/payment_page.dart';
@@ -63,9 +64,14 @@ class _IqubDrawerState extends State<IqubDrawer> {
           press: () => SelectedItem(context, 4, widget.iqub, widget.members),
         ),
         buildMenuItem(
+          text: 'draw lot',
+          icon: Icons.sports_tennis_rounded,
+          press: () => SelectedItem(context, 5, widget.iqub, widget.members),
+        ),
+        buildMenuItem(
           text: 'delete iqub',
           icon: Icons.delete,
-          press: () => SelectedItem(context, 5, widget.iqub, widget.members),
+          press: () => SelectedItem(context, 6, widget.iqub, widget.members),
         ),
       ]),
     ));
@@ -119,11 +125,14 @@ void SelectedItem(BuildContext context, int index, String iqub, List members) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => AdmineditPage(iqubId: iqub, members: members)));
       break;
-
     case 5:
       Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => DrawLot(iqubid: iqub, members: members)));
+      break;
+    case 6:
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) =>
-              AdminDeleteMemberPage(iqubid: iqub, members: members)));
+              AdmindeletePage(iqubId: iqub, members: members)));
       break;
   }
 }

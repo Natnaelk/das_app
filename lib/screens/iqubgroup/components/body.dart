@@ -17,17 +17,17 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: (10)),
+      padding: const EdgeInsets.symmetric(horizontal: (10)),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: (20),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Created iqubs"),
+                const Text("Created iqubs"),
                 FlatButton(
                     onPressed: () {
                       Navigator.pushNamed(context, CreateIqubForm.routeName);
@@ -37,7 +37,7 @@ class Body extends StatelessWidget {
               ],
             ),
             CreatedIqub(),
-            SizedBox(
+            const SizedBox(
               height: (40),
             ),
             Row(

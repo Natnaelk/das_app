@@ -17,7 +17,13 @@ class HomeHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             // search filed widget
-            SearchField(),
+            IconButton(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                icon: Icon(Icons.search, color: Colors.orange, size: 25.0),
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SearchPage()));
+                }),
             NotificationIconBtn(
               svgSrc: "assets/icons/Bell.svg",
               numOfItems: 3,

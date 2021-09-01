@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/models/iqub_model.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

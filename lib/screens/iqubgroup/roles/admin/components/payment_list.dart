@@ -4,35 +4,61 @@ import 'package:das_app/screens/iqubgroup/roles/admin/components/members_page.da
 import 'package:das_app/screens/iqubgroup/roles/admin/components/requests_page.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../../../../../constants.dart';
 
-class RequestList extends StatefulWidget {
+class PaymentList extends StatefulWidget {
   String senderId;
   String iqubId;
-  String requestId;
+  String paymentId;
+  String imageUrl;
 
-  RequestList({Key key, this.senderId, this.iqubId, this.requestId})
+  PaymentList(
+      {Key key, this.senderId, this.iqubId, this.paymentId, this.imageUrl})
       : super(key: key);
 
   @override
-  State<RequestList> createState() => _RequestListState();
+  State<PaymentList> createState() => _PaymentListState();
 }
 
-class _RequestListState extends State<RequestList> {
-  void _acceptMember(BuildContext context, String iqubId, String senderid,
-      String status) async {
+class _PaymentListState extends State<PaymentList> {
+  void _acceptPayment(BuildContext context, String paymentId) async {
     try {
-      await DatabaseService().joinIqub(iqubId, senderid, status);
-      if (senderid.isNotEmpty && iqubId.isNotEmpty) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => AdminrequestsPage(
-                  iqubId: iqubId,
-                )));
+      await DatabaseService().acceptPayment(paymentId);
+      if (paymentId != null) {
+        Navigator.of(context).pop();
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: kPrimaryColor,
-          content: Text("Member Accepted successfuly"),
+          content: Text("payment accepted successfully"),
+          duration: Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("error"),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: kPrimaryColor,
+        content: Text(e.toString()),
+        duration: const Duration(seconds: 2),
+      ));
+    }
+  }
+
+  void _rejectPayment(BuildContext context, String paymentId) async {
+    try {
+      await DatabaseService().rejectPayment(paymentId);
+      if (paymentId != null) {
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("payment rejected successfully"),
           duration: Duration(seconds: 2),
         ));
       } else {
@@ -73,18 +99,22 @@ class _RequestListState extends State<RequestList> {
               }
               return Scaffold(
                 appBar: AppBar(
-                  title: Text('requests'),
+                  title: Text('proof of payment'),
                 ),
                 body: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: snapshot.data.docs.map((document) {
-                    print(document['firstName']);
                     return Column(children: <Widget>[
                       SizedBox(
-                        height: 300,
-                        width: 300,
-                        child: Image.asset('assets/images/insurancepic.jpg'),
-                      ),
+                          height: 300,
+                          width: 300,
+                          child: PhotoView(
+                            imageProvider:
+                                NetworkImage(widget.imageUrl, scale: 1.0),
+                            loadingBuilder: (BuildContext context, event) {
+                              return Center(child: CircularProgressIndicator());
+                            },
+                          )),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -135,8 +165,7 @@ class _RequestListState extends State<RequestList> {
                         children: <Widget>[
                           FlatButton(
                             onPressed: () {
-                              _acceptMember(context, widget.iqubId,
-                                  widget.senderId, widget.requestId);
+                              _acceptPayment(context, widget.paymentId);
                             },
                             color: Colors.green,
                             child: Text(
@@ -147,7 +176,7 @@ class _RequestListState extends State<RequestList> {
                           Padding(padding: EdgeInsets.only(left: 40)),
                           FlatButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              _rejectPayment(context, widget.paymentId);
                             },
                             color: Colors.red,
                             child: Text(

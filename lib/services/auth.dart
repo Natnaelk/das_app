@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'collections.dart';
 
 class Auth {
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Stream<AuthModel> get user {
     return _auth.authStateChanges().map(
@@ -58,6 +58,20 @@ class Auth {
     String retVal = "error";
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+      retVal = "success";
+    } on PlatformException catch (e) {
+      retVal = e.message;
+    } catch (e) {
+      retVal = e.message;
+      print(e);
+    }
+    return retVal;
+  }
+
+  Future<String> resetPassword(String email) async {
+    String retVal = "error";
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
       retVal = "success";
     } on PlatformException catch (e) {
       retVal = e.message;

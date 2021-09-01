@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/components/add_member.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/components/delete.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/components/delete_members.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/iqub_drawer_navigation.dart';
 import 'package:flutter/material.dart';
 
@@ -36,90 +37,69 @@ class _AdminmembersPageState extends State<AdminmembersPage> {
                 return Center(child: Text('Loading...'));
               }
               return Scaffold(
-                drawer: IqubDrawer(
-                  iqub: widget.iqubId,
-                  members: widget.members,
-                ),
-                appBar: AppBar(
-                  title: Text('Members'),
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AdminAddMembersPage(
-                                  iqubid: widget.iqubId,
-                                  members: widget.members,
-                                )));
-                      },
-                      icon: Icon(Icons.add),
-                      color: kPrimaryColor,
+                  drawer: IqubDrawer(
+                    iqub: widget.iqubId,
+                    members: widget.members,
+                  ),
+                  appBar: AppBar(
+                    title: Text('Members'),
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AdminAddMembersPage(
+                                    iqubid: widget.iqubId,
+                                    members: widget.members,
+                                  )));
+                        },
+                        icon: Icon(Icons.add),
+                        color: kPrimaryColor,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AdminDeleteMemberPage(
+                                    iqubid: widget.iqubId,
+                                    members: widget.members,
+                                  )));
+                        },
+                        icon: Icon(Icons.delete),
+                        color: kPrimaryColor,
+                      ),
+                    ],
+                  ),
+                  body: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Column(
+                          children: snapshot.data.docs.map((document) {
+                        return Column(children: <Widget>[
+                          Card(
+                              margin: EdgeInsets.fromLTRB(20, 6, 20, 0.0),
+                              child: ListTile(
+                                // onLongPress: () {
+                                //   setState(() {
+                                //     showAlertDialog(
+                                //         context, widget.iqubid, document['uid']);
+                                //   });
+                                // },
+                                leading: CircleAvatar(
+                                    radius: 30.0,
+                                    backgroundColor: kPrimaryColor,
+                                    child: Text(
+                                        document['firstName']
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                        style: TextStyle(color: Colors.white))),
+                                title: Text(
+                                  document['firstName'],
+                                ),
+                                subtitle: Text(document['email']),
+                              )),
+                        ]);
+                      }).toList()),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AdminDeleteMemberPage(
-                                  iqubid: widget.iqubId,
-                                  members: widget.members,
-                                )));
-                      },
-                      icon: Icon(Icons.delete),
-                      color: kPrimaryColor,
-                    ),
-                  ],
-                ),
-                body: ListView(
-                  children: snapshot.data.docs.map((document) {
-                    print(widget.iqubId);
-                    return Column(children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text(
-                            "user Name :",
-                            style: TextStyle(
-                                color: kPrimaryColor,
-                                fontSize: 20,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                            width: 40,
-                          ),
-                          Text(
-                            document['firstName'],
-                            style: const TextStyle(),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text(
-                            "email :",
-                            style: TextStyle(
-                                color: kPrimaryColor,
-                                fontSize: 20,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                            width: 40,
-                          ),
-                          Text(
-                            document['email'],
-                            style: const TextStyle(),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                    ]);
-                  }).toList(),
-                ),
-              );
+                  ));
             }),
       ),
     );

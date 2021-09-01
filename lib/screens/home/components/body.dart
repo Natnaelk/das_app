@@ -28,11 +28,10 @@ class Body extends StatelessWidget {
           .doc(currentUid)
           .snapshots(),
       builder: (context, snapshot) {
-        var userDocument = snapshot.data;
-
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         } else {
+          var userDocument = snapshot.data;
           return SafeArea(
               child: SingleChildScrollView(
             child: Column(

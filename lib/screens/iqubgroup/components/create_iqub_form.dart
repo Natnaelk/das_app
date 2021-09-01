@@ -18,26 +18,23 @@ class CreateIqubForm extends StatefulWidget {
 
 class _CreateIqubFormState extends State<CreateIqubForm> {
   void _createIqub(BuildContext context, String iqubName) async {
-    try {
-      AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
-      String currentUid = _authStream.uid;
-      await DatabaseService().createIqub(currentUid, iqubName);
-      if (currentUid.isNotEmpty) {
-        Navigator.pushNamed(context, GroupsScreen.routeName);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: kPrimaryColor,
-          content: Text("Iqub created successfully"),
-          duration: Duration(seconds: 2),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: kPrimaryColor,
-          content: Text("error"),
-          duration: Duration(seconds: 2),
-        ));
-      }
-    } catch (e) {
-      print(e);
+    AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
+    String currentUid = _authStream.uid;
+    String result =
+        await DatabaseService(uid: currentUid).createIqub(currentUid, iqubName);
+    if (currentUid.isNotEmpty) {
+      Navigator.pushNamed(context, GroupsScreen.routeName);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: kPrimaryColor,
+        content: Text("Iqub created successfully"),
+        duration: Duration(seconds: 2),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: kPrimaryColor,
+        content: Text("error occured please try again"),
+        duration: Duration(seconds: 2),
+      ));
     }
   }
 

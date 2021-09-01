@@ -1,19 +1,11 @@
 import 'package:das_app/helper/keyboard.dart';
-import 'package:das_app/screens/complete_profile/complete_profile_screen.dart';
-import 'package:das_app/screens/otp/otp_screen.dart';
 import 'package:das_app/screens/sign_in/sign_in_screen.dart';
 import 'package:das_app/services/auth.dart';
-import 'package:das_app/services/collections.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:das_app/components/custom_surfix_icon.dart';
 import 'package:das_app/components/default_button.dart';
 import 'package:das_app/components/form_error.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
-
 import '../../../constants.dart';
-import '../../../size_config.dart';
 
 class SignUpForm extends StatefulWidget {
   @override
