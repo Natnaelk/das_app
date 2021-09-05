@@ -1,7 +1,7 @@
 import 'package:das_app/screens/create_account/create_account_screen.dart';
+import 'package:das_app/screens/otp/components/phone_txtform.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
-import '../size_config.dart';
 
 class NoAccountText extends StatelessWidget {
   const NoAccountText({
@@ -13,15 +13,19 @@ class NoAccountText extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
+        const Text(
           "Don't have an account? ",
           style: TextStyle(
             fontSize: (15),
           ),
         ),
         GestureDetector(
-          onTap: () =>
-              Navigator.pushNamed(context, CreateAccountScreen.routeName),
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => PhoneLogIn()));
+          },
+          // Navigator.pushNamed(context, CreateAccountScreen.routeName),
+
           child: Text(
             "Create Account",
             style: TextStyle(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/components/section_title.dart';
-import 'package:das_app/screens/idirgroup/roles/idir_admin_screen.dart';
+import 'package:das_app/screens/idirgroup/components/idir_details_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,36 +34,38 @@ class _TrendingIdirState extends State<TrendingIdir> {
               text: "Trending idirs",
               press: () {},
             ),
-            SizedBox(height: 20),
-            InkWell(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: snapshot.data.docs.map((document) {
-                    return Center(
-                        child: TrendingIdirsCard(
-                      idirName: document['idirName'],
-                      idirProPic: 'assets/images/insurancepic.jpg',
-                      idirType: 'Monthly',
-                    ));
-                  }).toList(),
-                ),
+            const SizedBox(height: 20),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data.docs.map((document) {
+                  return InkWell(
+                      child: Center(
+                          child: TrendingidirsCard(
+                        idirName: document['idirName'],
+                        idirProPic: 'assets/images/insurancepic.jpg',
+                        idirType: 'Monthly',
+                      )),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => idirDetailsScreen(
+                                idirid: document['idirId'],
+                                uid: currentUid,
+                              ),
+                            ));
+                      });
+                }).toList(),
               ),
-              onTap: () {
-                //   Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           //builder: (context) => idirAdminScreen(),
-                //           ));
-              },
-            )
+            ),
           ]);
         });
   }
 }
 
-class TrendingIdirsCard extends StatelessWidget {
-  const TrendingIdirsCard({
+class TrendingidirsCard extends StatelessWidget {
+  const TrendingidirsCard({
     Key key,
     @required this.idirName,
     @required this.pooledMoneyAmount,

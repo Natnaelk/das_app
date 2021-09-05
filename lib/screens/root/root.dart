@@ -11,8 +11,6 @@ enum AuthStatus {
   unknown,
   LoggedIn,
   notLoggedIn,
-  // notInGroup,
-  // inGroup,
 }
 
 class Root extends StatefulWidget {
@@ -36,6 +34,10 @@ class _RootState extends State<Root> {
         _authStatus = AuthStatus.LoggedIn;
         currentuid = _authStream.uid;
       });
+    } else if (_authStream.uid == null) {
+      setState(() {
+        _authStatus = AuthStatus.unknown;
+      });
     } else {
       setState(() {
         _authStatus = AuthStatus.notLoggedIn;
@@ -56,18 +58,6 @@ class _RootState extends State<Root> {
       case AuthStatus.notLoggedIn:
         retVal = SignInScreen();
         break;
-      // case AuthStatus.notInGroup:
-      //   retVal = Scaffold(
-      //       body: Center(
-      //     child: Text("not in group"),
-      //   ));
-      //   break;
-      // case AuthStatus.inGroup:
-      //   retVal = Scaffold(
-      //       body: Center(
-      //     child: Text("in group"),
-      //   ));
-      //   break;
       default:
     }
     return retVal;

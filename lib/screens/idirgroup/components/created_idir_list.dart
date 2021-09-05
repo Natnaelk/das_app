@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/screens/idirgroup/roles/idir_admin_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/idir_admin_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,30 +25,32 @@ class _CreatedIdirState extends State<CreatedIdir> {
           // final Idir = snapshot.data.docs;
           if (!snapshot.hasData) {
             return const Text('Loading...');
-          }
-          return InkWell(
-            child: SingleChildScrollView(
+          } else {
+            return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: snapshot.data.docs.map((document) {
-                  return Center(
-                    child: CreatedIdirsCard(
-                      IdirName: document['idirName'],
-                      IdirProPic: 'assets/images/insurancepic.jpg',
-                      IdirType: 'Monthly',
-                    ),
-                  );
+                  return InkWell(
+                      child: Center(
+                        child: CreatedIdirsCard(
+                          IdirName: document['idirName'],
+                          IdirProPic: 'assets/images/insurancepic.jpg',
+                          IdirType: 'Monthly',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => idirAdminScreen(
+                                      idir: document['idirId'],
+                                      members: document['members'],
+                                    )));
+                      });
                 }).toList(),
               ),
-            ),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => idirAdminScreen(),
-                  ));
-            },
-          );
+            );
+          }
         });
   }
 }

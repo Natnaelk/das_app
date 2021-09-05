@@ -1,22 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/screens/home/components/idir_search_field.dart';
 import 'package:das_app/screens/home/home_screen.dart';
-import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
-import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/idir_admin_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/member/idir_member_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../constants.dart';
 
-import '../../constants.dart';
-
-class SearchPage extends StatefulWidget {
+class IdirSearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<IdirSearchPage> {
   // data
   TextEditingController searchEditingController = new TextEditingController();
   QuerySnapshot searchResultSnapshot;
@@ -46,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
         isLoading = true;
       });
       await DatabaseService()
-          .searchByName(searchEditingController.text)
+          .searchIdirByName(searchEditingController.text)
           .then((snapshot) {
         searchResultSnapshot = snapshot;
         //print("$searchResultSnapshot");
@@ -69,9 +67,9 @@ class _SearchPageState extends State<SearchPage> {
     ));
   }
 
-  _joinValueInGroup(String userid, String iqubId) async {
+  _joinValueInGroup(String userid, String idirId) async {
     bool value =
-        await DatabaseService(uid: userid).isUserJoined(iqubId, userid);
+        await DatabaseService(uid: userid).isUserJoined(idirId, userid);
     setState(() {
       _isJoined = value;
     });
@@ -88,16 +86,16 @@ class _SearchPageState extends State<SearchPage> {
             itemBuilder: (context, index) {
               return groupTile(
                 currentUid,
-                searchResultSnapshot.docs[index].get("iqubName"),
-                searchResultSnapshot.docs[index].get("iqubId"),
+                searchResultSnapshot.docs[index].get("idirName"),
+                searchResultSnapshot.docs[index].get("idirId"),
                 searchResultSnapshot.docs[index].get("admin"),
               );
             })
         : Container();
   }
 
-  Widget groupTile(String uid, String iqubName, String iqubId, String admin) {
-    _joinValueInGroup(uid, iqubId);
+  Widget groupTile(String uid, String idirName, String idirId, String admin) {
+    _joinValueInGroup(uid, idirId);
     AuthModel _authStream = Provider.of<AuthModel>(context);
     String currentUid = _authStream.uid;
     return ListTile(
@@ -106,20 +104,20 @@ class _SearchPageState extends State<SearchPage> {
       leading: CircleAvatar(
           radius: 30.0,
           backgroundColor: kPrimaryColor,
-          child: Text(iqubName.substring(0, 1).toUpperCase(),
+          child: Text(idirName.substring(0, 1).toUpperCase(),
               style: TextStyle(color: Colors.white))),
-      title: Text(iqubName, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(idirName, style: TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text("Admin: $admin"),
       trailing: InkWell(
         onTap: () async {
           if (!_isJoined) {
             if (admin == currentUid) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => iqubAdminScreen(
-                        iqub: iqubId,
+                  builder: (context) => idirAdminScreen(
+                        idir: idirId,
                       )));
             } else {
-              await DatabaseService(uid: _userid).requestjoinIqub(iqubId, uid);
+              await DatabaseService(uid: _userid).requestjoinIdir(idirId, uid);
               _showScaffold('request sent successfully');
               Future.delayed(Duration(milliseconds: 2000), () {
                 Navigator.of(context).pushNamed(HomeScreen.routeName);
@@ -127,8 +125,8 @@ class _SearchPageState extends State<SearchPage> {
             }
           } else {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => iqubMemberScreen(
-                      iqub: iqubId,
+                builder: (context) => idirMemberScreen(
+                      idir: idirId,
                     )));
           }
         },
@@ -211,19 +209,6 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
             ),
-            GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => IdirSearchPage()));
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Text(
-                        'Looking for idirs?',
-                        style: TextStyle(color: kPrimaryColor),
-                      )
-                    ])),
             isLoading
                 ? Container(child: Center(child: CircularProgressIndicator()))
                 : groupList()

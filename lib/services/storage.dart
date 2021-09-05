@@ -6,45 +6,53 @@ class FBStorage {
   static FBStorage get instanace => FBStorage();
 
   // Save Image to Storage
-  Future<List> saveUserImageToFirebaseStorage(
+  Future<String> saveIqubPaymentImageToFirebaseStorage(
       iqubId, userId, userImageFile) async {
+    String retVal = "waiting";
     try {
-      String filePath = 'paymentImages/$userId';
+      String filePath = 'IqubpaymentImages/$userId';
 
       try {
         await FirebaseStorage.instance.ref(filePath).putFile(userImageFile);
         String imageURL =
             await FirebaseStorage.instance.ref(filePath).getDownloadURL();
         await DatabaseService(uid: userId)
-            .savePaymentInfo(iqubId, userId, imageURL);
+            .saveIqubPaymentInfo(iqubId, userId, imageURL);
+        retVal = "success";
       } catch (e) {
+        retVal = "error";
         print('upload image exception, code is ${e.code}');
         // e.g, e.code == 'canceled'
       }
     } catch (e) {
+      retVal = "error";
       print(e.message);
     }
+    return retVal;
   }
 
-  // Future<String> sendImageToUserInChatRoom(croppedFile, chatID) async {
-  //   try {
-  //     String imageTimeStamp = DateTime.now().millisecondsSinceEpoch.toString();
-  //     String filePath = 'chatrooms/$chatID/$imageTimeStamp';
+  Future<String> saveIdirPaymentImageToFirebaseStorage(
+      idirId, userId, userImageFile) async {
+    String retVal = "waiting";
+    try {
+      String filePath = 'IdirpaymentImages/$userId';
 
-  //     try {
-  //       await firebase_storage.FirebaseStorage.instance
-  //           .ref(filePath)
-  //           .putFile(croppedFile);
-  //     } on firebase_core.FirebaseException catch (e) {
-  //       print('upload image exception, code is ${e.code}');
-  //       // e.g, e.code == 'canceled'
-  //     }
-
-  //     return await firebase_storage.FirebaseStorage.instance
-  //         .ref(filePath)
-  //         .getDownloadURL();
-  //   } catch (e) {
-  //     print(e.message);
-  //   }
-  // }
+      try {
+        await FirebaseStorage.instance.ref(filePath).putFile(userImageFile);
+        String imageURL =
+            await FirebaseStorage.instance.ref(filePath).getDownloadURL();
+        await DatabaseService(uid: userId)
+            .saveIdirPaymentInfo(idirId, userId, imageURL);
+        retVal = "success";
+      } catch (e) {
+        retVal = "error";
+        print('upload image exception, code is ${e.code}');
+        // e.g, e.code == 'canceled'
+      }
+    } catch (e) {
+      retVal = "error";
+      print(e.message);
+    }
+    return retVal;
+  }
 }

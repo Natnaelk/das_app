@@ -4,24 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import '../../../../../constants.dart';
 
-class PaymentList extends StatefulWidget {
+class IdirPaymentList extends StatefulWidget {
   String senderId;
-  String iqubId;
+  String idirId;
   String paymentId;
   String imageUrl;
 
-  PaymentList(
-      {Key key, this.senderId, this.iqubId, this.paymentId, this.imageUrl})
+  IdirPaymentList(
+      {Key key, this.senderId, this.idirId, this.paymentId, this.imageUrl})
       : super(key: key);
 
   @override
-  State<PaymentList> createState() => _PaymentListState();
+  State<IdirPaymentList> createState() => _IdirPaymentListState();
 }
 
-class _PaymentListState extends State<PaymentList> {
+class _IdirPaymentListState extends State<IdirPaymentList> {
   void _acceptPayment(BuildContext context, String paymentId) async {
     try {
-      await DatabaseService().acceptPayment(paymentId);
+      await DatabaseService().acceptIdirPayment(paymentId);
       if (paymentId != null) {
         Navigator.of(context).pop();
 
@@ -86,7 +86,7 @@ class _PaymentListState extends State<PaymentList> {
             stream: FirebaseFirestore.instance
                 .collection("users")
                 .where("uid", isEqualTo: widget.senderId)
-                .where("iqubs", isNotEqualTo: widget.iqubId)
+                .where("idirs", isNotEqualTo: widget.idirId)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

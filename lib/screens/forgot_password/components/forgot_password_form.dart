@@ -34,7 +34,9 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
           duration: Duration(seconds: 2),
         ));
       }
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   TextEditingController emailController = TextEditingController();

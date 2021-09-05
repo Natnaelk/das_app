@@ -1,24 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/screens/home/components/idir_search_field.dart';
 import 'package:das_app/screens/home/home_screen.dart';
-import 'package:das_app/screens/iqubgroup/roles/admin/iqub_admin_screen.dart';
-import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/idir_admin_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/member/idir_member_screen.dart';
 import 'package:das_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants.dart';
+import '../../../constants.dart';
 
-class SearchPage extends StatefulWidget {
+class IdirSearchPage extends StatefulWidget {
+  const IdirSearchPage({Key key}) : super(key: key);
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<IdirSearchPage> {
   // data
-  TextEditingController searchEditingController = new TextEditingController();
+  TextEditingController searchEditingController = TextEditingController();
   QuerySnapshot searchResultSnapshot;
   bool isLoading = false;
   bool hasUserSearched = false;
@@ -46,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
         isLoading = true;
       });
       await DatabaseService()
-          .searchByName(searchEditingController.text)
+          .searchIdirByName(searchEditingController.text)
           .then((snapshot) {
         searchResultSnapshot = snapshot;
         //print("$searchResultSnapshot");
@@ -61,7 +62,7 @@ class _SearchPageState extends State<SearchPage> {
   void _showScaffold(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       backgroundColor: kPrimaryColor,
-      duration: Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1500),
       content: Text(
         message,
         textAlign: TextAlign.center,
@@ -69,9 +70,9 @@ class _SearchPageState extends State<SearchPage> {
     ));
   }
 
-  _joinValueInGroup(String userid, String iqubId) async {
+  _joinValueInGroup(String userid, String idirId) async {
     bool value =
-        await DatabaseService(uid: userid).isUserJoined(iqubId, userid);
+        await DatabaseService(uid: userid).isUserJoined(idirId, userid);
     setState(() {
       _isJoined = value;
     });
@@ -88,47 +89,49 @@ class _SearchPageState extends State<SearchPage> {
             itemBuilder: (context, index) {
               return groupTile(
                 currentUid,
-                searchResultSnapshot.docs[index].get("iqubName"),
-                searchResultSnapshot.docs[index].get("iqubId"),
+                searchResultSnapshot.docs[index].get("idirName"),
+                searchResultSnapshot.docs[index].get("idirId"),
                 searchResultSnapshot.docs[index].get("admin"),
               );
             })
         : Container();
   }
 
-  Widget groupTile(String uid, String iqubName, String iqubId, String admin) {
-    _joinValueInGroup(uid, iqubId);
+  Widget groupTile(String uid, String idirName, String idirId, String admin) {
+    _joinValueInGroup(uid, idirId);
     AuthModel _authStream = Provider.of<AuthModel>(context);
     String currentUid = _authStream.uid;
     return ListTile(
       tileColor: kSecondaryColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       leading: CircleAvatar(
           radius: 30.0,
           backgroundColor: kPrimaryColor,
-          child: Text(iqubName.substring(0, 1).toUpperCase(),
-              style: TextStyle(color: Colors.white))),
-      title: Text(iqubName, style: TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(idirName.substring(0, 1).toUpperCase(),
+              style: const TextStyle(color: Colors.white))),
+      title:
+          Text(idirName, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text("Admin: $admin"),
       trailing: InkWell(
         onTap: () async {
           if (!_isJoined) {
             if (admin == currentUid) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => iqubAdminScreen(
-                        iqub: iqubId,
+                  builder: (context) => idirAdminScreen(
+                        idir: idirId,
                       )));
             } else {
-              await DatabaseService(uid: _userid).requestjoinIqub(iqubId, uid);
+              await DatabaseService(uid: _userid).requestjoinIdir(idirId, uid);
               _showScaffold('request sent successfully');
-              Future.delayed(Duration(milliseconds: 2000), () {
+              Future.delayed(const Duration(milliseconds: 2000), () {
                 Navigator.of(context).pushNamed(HomeScreen.routeName);
               });
             }
           } else {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => iqubMemberScreen(
-                      iqub: iqubId,
+                builder: (context) => idirMemberScreen(
+                      idir: idirId,
                     )));
           }
         },
@@ -139,17 +142,19 @@ class _SearchPageState extends State<SearchPage> {
                         borderRadius: BorderRadius.circular(10.0),
                         color: Colors.black87,
                         border: Border.all(color: Colors.white, width: 1.0)),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                    child: Text('Admin', style: TextStyle(color: Colors.white)))
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 10.0),
+                    child: const Text('Admin',
+                        style: TextStyle(color: Colors.white)))
                 : Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: kPrimaryColor,
                     ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                    child: Text('Join', style: TextStyle(color: Colors.white)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 10.0),
+                    child: const Text('Join',
+                        style: TextStyle(color: Colors.white)),
                   )
             : Container(
                 decoration: BoxDecoration(
@@ -177,17 +182,18 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
               //color: kPrimaryColor,
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: searchEditingController,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: kPrimaryColor,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           hintText: "Search groups...",
                           hintStyle: TextStyle(
                             color: kSecondaryColor,
@@ -196,7 +202,7 @@ class _SearchPageState extends State<SearchPage> {
                           border: InputBorder.none),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   GestureDetector(
                       onTap: () {
                         _initiateSearch();
@@ -207,23 +213,10 @@ class _SearchPageState extends State<SearchPage> {
                           decoration: BoxDecoration(
                               color: kPrimaryColor,
                               borderRadius: BorderRadius.circular(40)),
-                          child: Icon(Icons.search, color: Colors.white)))
+                          child: const Icon(Icons.search, color: Colors.white)))
                 ],
               ),
             ),
-            GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => IdirSearchPage()));
-                },
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Text(
-                        'Looking for idirs?',
-                        style: TextStyle(color: kPrimaryColor),
-                      )
-                    ])),
             isLoading
                 ? Container(child: Center(child: CircularProgressIndicator()))
                 : groupList()

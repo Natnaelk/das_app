@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
-import 'package:das_app/screens/iqubgroup/roles/member/iqub_member_screen.dart';
+import 'package:das_app/screens/idirgroup/roles/member/idir_member_screen.dart';
 import 'package:das_app/services/database.dart';
 
 import 'package:flutter/material.dart';
@@ -26,47 +26,51 @@ class _JoinedIdirState extends State<JoinedIdir> {
             .where("members", arrayContains: currentUid)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //var iqub = snapshot.data;
+          //var Idir = snapshot.data;
           if (!snapshot.hasData) {
             return const Text('Loading...');
           }
-          return InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => iqubMemberScreen()));
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: snapshot.data.docs.map((document) {
-                  return Center(
-                    child: JoinedIqubsCard(
-                      IqubName: document['idirName'],
-                      IqubProPic: 'assets/images/insurancepic.jpg',
-                      IqubType: 'Monthly',
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: snapshot.data.docs.map((document) {
+                return InkWell(
+                    child: Center(
+                      child: JoinedIdirsCard(
+                        IdirName: document['idirName'],
+                        IdirProPic: 'assets/images/insurancepic.jpg',
+                        IdirType: 'Monthly',
+                      ),
                     ),
-                  );
-                }).toList(),
-              ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => idirMemberScreen(
+                                    idir: document['idirId'],
+                                    members: document['members'],
+                                  )));
+                    });
+              }).toList(),
             ),
           );
         });
   }
 }
 
-class JoinedIqubsCard extends StatelessWidget {
-  const JoinedIqubsCard({
+class JoinedIdirsCard extends StatelessWidget {
+  const JoinedIdirsCard({
     Key key,
-    @required this.IqubName,
+    @required this.IdirName,
     @required this.PooledMoneyAmount,
-    @required this.IqubType,
+    @required this.IdirType,
     @required this.press,
-    @required this.IqubProPic,
+    @required this.IdirProPic,
   }) : super(key: key);
-  final String IqubName;
-  final String IqubProPic;
+  final String IdirName;
+  final String IdirProPic;
   final int PooledMoneyAmount;
-  final String IqubType;
+  final String IdirType;
   final GestureTapCallback press;
 
   @override
@@ -81,7 +85,7 @@ class JoinedIqubsCard extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 Image.asset(
-                  IqubProPic,
+                  IdirProPic,
                   fit: BoxFit.cover,
                 ),
                 Container(
@@ -105,14 +109,14 @@ class JoinedIqubsCard extends StatelessWidget {
                       ),
                       children: [
                         TextSpan(
-                          text: "$IqubName\n",
+                          text: "$IdirName\n",
                           style: const TextStyle(
                             fontSize: (18),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
-                            text: "$IqubType $PooledMoneyAmount birr",
+                            text: "$IdirType $PooledMoneyAmount birr",
                             style: const TextStyle(
                               fontSize: (16),
                               fontWeight: FontWeight.bold,

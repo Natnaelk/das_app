@@ -5,20 +5,20 @@ import 'package:das_app/services/iqub_image_picker.dart';
 import 'package:das_app/services/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../iqub_member_drawer_navigation.dart';
+import '../idir_member_drawer_navigation.dart';
 
-class MemberpaymentPage extends StatelessWidget {
-  String iqubId;
+class IdirMemberpaymentPage extends StatelessWidget {
+  String idirId;
   List members;
-  MemberpaymentPage({this.iqubId, this.members});
+  IdirMemberpaymentPage({this.idirId, this.members});
 
   @override
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
     String currentUid = _authStream.uid;
     return Scaffold(
-      drawer: IqubMemberDrawer(
-        iqub: iqubId,
+      drawer: idirMemberDrawer(
+        idir: idirId,
         members: members,
       ),
       appBar: AppBar(
@@ -28,7 +28,7 @@ class MemberpaymentPage extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 2.0),
           child: Column(
             children: <Widget>[
-              IqubUserImagePicker(iqubid: iqubId),
+              IdirUserImagePicker(idirid: idirId),
               SizedBox(height: 10),
             ],
           )),

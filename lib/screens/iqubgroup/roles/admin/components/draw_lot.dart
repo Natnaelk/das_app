@@ -18,11 +18,6 @@ class DrawLot extends StatefulWidget {
 class _DrawLotState extends State<DrawLot> {
   @override
   Widget build(BuildContext context) {
-    dynamic winner = (widget.members..shuffle()).first;
-    setState(() {
-      dynamic winner = (widget.members..shuffle()).first;
-      FirebaseFirestore.instance.collection('users');
-    });
     // int len = widget.members.length;
     return Scaffold(
       body: Container(
@@ -42,7 +37,7 @@ class _DrawLotState extends State<DrawLot> {
                     members: widget.members,
                   ),
                   appBar: AppBar(
-                    title: Text('Members'),
+                    title: Text('Draw lot'),
                   ),
                   body: SingleChildScrollView(
                     child: Padding(
@@ -74,9 +69,8 @@ class _DrawLotState extends State<DrawLot> {
                               Navigator.of(context)
                                   .pushReplacement(MaterialPageRoute(
                                       builder: (context) => IqubWinnerScreen(
-                                            // iqubid: widget.iqubid,
-                                            //members: widget.members,
-                                            winner: winner,
+                                            iqubid: widget.iqubid,
+                                            members: widget.members,
                                           )));
                             },
                             color: kPrimaryColor,

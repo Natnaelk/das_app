@@ -1,6 +1,6 @@
-import 'package:das_app/screens/idirgroup/components/search_field.dart';
 import 'package:das_app/screens/idirgroup/components/create_idir_form.dart';
 import 'package:das_app/screens/idirgroup/components/created_idir_list.dart';
+import 'package:das_app/screens/idirgroup/components/idir_search_field.dart';
 import 'package:das_app/screens/idirgroup/components/joined_idir_list.dart';
 import 'package:flutter/material.dart';
 
@@ -45,8 +45,7 @@ class Body extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => IdirSearchField()),
+                      MaterialPageRoute(builder: (context) => IdirSearchPage()),
                     );
                   },
                   color: kPrimaryColor,

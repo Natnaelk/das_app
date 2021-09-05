@@ -1,60 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/components/default_button.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/components/members_page.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/components/requests_page.dart';
 import 'package:das_app/services/database.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
+
 import '../../../../../constants.dart';
 
-class PaymentList extends StatefulWidget {
+class IdirRequestList extends StatefulWidget {
   String senderId;
-  String iqubId;
-  String paymentId;
-  String imageUrl;
+  String idirId;
+  String requestId;
 
-  PaymentList(
-      {Key key, this.senderId, this.iqubId, this.paymentId, this.imageUrl})
+  IdirRequestList({Key key, this.senderId, this.idirId, this.requestId})
       : super(key: key);
 
   @override
-  State<PaymentList> createState() => _PaymentListState();
+  State<IdirRequestList> createState() => _IdirRequestListState();
 }
 
-class _PaymentListState extends State<PaymentList> {
-  void _acceptPayment(BuildContext context, String paymentId) async {
+class _IdirRequestListState extends State<IdirRequestList> {
+  void _acceptMember(BuildContext context, String idirId, String senderid,
+      String status) async {
     try {
-      await DatabaseService().acceptPayment(paymentId);
-      if (paymentId != null) {
-        Navigator.of(context).pop();
+      await DatabaseService().joinIdir(idirId, senderid, status);
+      if (senderid.isNotEmpty && idirId.isNotEmpty) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => AdminrequestsPage(
+                  idirId: idirId,
+                )));
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: kPrimaryColor,
-          content: Text("payment accepted successfully"),
-          duration: Duration(seconds: 2),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: kPrimaryColor,
-          content: Text("error"),
-          duration: Duration(seconds: 2),
-        ));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: kPrimaryColor,
-        content: Text(e.toString()),
-        duration: const Duration(seconds: 2),
-      ));
-    }
-  }
-
-  void _rejectPayment(BuildContext context, String paymentId) async {
-    try {
-      await DatabaseService().rejectPayment(paymentId);
-      if (paymentId != null) {
-        Navigator.of(context).pop();
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: kPrimaryColor,
-          content: Text("payment rejected successfully"),
+          content: Text("Member Accepted successfuly"),
           duration: Duration(seconds: 2),
         ));
       } else {
@@ -86,7 +64,7 @@ class _PaymentListState extends State<PaymentList> {
             stream: FirebaseFirestore.instance
                 .collection("users")
                 .where("uid", isEqualTo: widget.senderId)
-                .where("iqubs", isNotEqualTo: widget.iqubId)
+                .where("idirs", isNotEqualTo: widget.idirId)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -95,22 +73,18 @@ class _PaymentListState extends State<PaymentList> {
               }
               return Scaffold(
                 appBar: AppBar(
-                  title: Text('proof of payment'),
+                  title: Text('requests'),
                 ),
                 body: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: snapshot.data.docs.map((document) {
+                    print(document['firstName']);
                     return Column(children: <Widget>[
                       SizedBox(
-                          height: 300,
-                          width: 300,
-                          child: PhotoView(
-                            imageProvider:
-                                NetworkImage(widget.imageUrl, scale: 1.0),
-                            loadingBuilder: (BuildContext context, event) {
-                              return Center(child: CircularProgressIndicator());
-                            },
-                          )),
+                        height: 300,
+                        width: 300,
+                        child: Image.asset('assets/images/insurancepic.jpg'),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -161,7 +135,8 @@ class _PaymentListState extends State<PaymentList> {
                         children: <Widget>[
                           FlatButton(
                             onPressed: () {
-                              _acceptPayment(context, widget.paymentId);
+                              _acceptMember(context, widget.idirId,
+                                  widget.senderId, widget.requestId);
                             },
                             color: Colors.green,
                             child: Text(
@@ -172,7 +147,7 @@ class _PaymentListState extends State<PaymentList> {
                           Padding(padding: EdgeInsets.only(left: 40)),
                           FlatButton(
                             onPressed: () {
-                              _rejectPayment(context, widget.paymentId);
+                              Navigator.pop(context);
                             },
                             color: Colors.red,
                             child: Text(

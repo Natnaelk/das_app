@@ -1,6 +1,7 @@
 import 'package:das_app/helper/keyboard.dart';
 import 'package:das_app/screens/sign_in/sign_in_screen.dart';
 import 'package:das_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:das_app/components/custom_surfix_icon.dart';
 import 'package:das_app/components/default_button.dart';
@@ -19,7 +20,8 @@ class _SignUpFormState extends State<SignUpForm> {
   TextEditingController phonecontroller = TextEditingController();
   TextEditingController firstnamecontroller = TextEditingController();
   TextEditingController lastnamecontroller = TextEditingController();
-
+  
+// sign up user
   void _signUp(String email, String password, String address, String phone,
       String firstName, String lastName, BuildContext context) async {
     try {
@@ -89,11 +91,9 @@ class _SignUpFormState extends State<SignUpForm> {
           buildFirstNameFormField(),
           SizedBox(height: (30)),
           buildLastNameFormField(),
-          SizedBox(height: (30)),
-          buildPhoneNumberFormField(),
-          SizedBox(height: (30)),
+          const SizedBox(height: (30)),
           FormError(errors: errors),
-          SizedBox(height: (40)),
+          const SizedBox(height: (40)),
           DefaultButton(
               text: "Continue",
               press: () {
@@ -238,32 +238,32 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  TextFormField buildPhoneNumberFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      controller: phonecontroller,
-      onSaved: (newValue) => phoneNumber = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kPhoneNumberNullError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kPhoneNumberNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
-      ),
-    );
-  }
+  // TextFormField buildPhoneNumberFormField() {
+  //   return TextFormField(
+  //     keyboardType: TextInputType.phone,
+  //     controller: phonecontroller,
+  //     onSaved: (newValue) => phoneNumber = newValue,
+  //     onChanged: (value) {
+  //       if (value.isNotEmpty) {
+  //         removeError(error: kPhoneNumberNullError);
+  //       }
+  //       return null;
+  //     },
+  //     validator: (value) {
+  //       if (value.isEmpty) {
+  //         addError(error: kPhoneNumberNullError);
+  //         return "";
+  //       }
+  //       return null;
+  //     },
+  //     decoration: const InputDecoration(
+  //       labelText: "Phone Number",
+  //       hintText: "Enter your phone number",
+  //       floatingLabelBehavior: FloatingLabelBehavior.always,
+  //       suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
+  //     ),
+  //   );
+  // }
 
   TextFormField buildLastNameFormField() {
     return TextFormField(

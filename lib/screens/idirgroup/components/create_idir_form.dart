@@ -23,13 +23,13 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
       await DatabaseService().createIdir(currentUid, idirName);
       if (currentUid.isNotEmpty) {
         Navigator.pushNamed(context, GroupsScreen.routeName);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: kPrimaryColor,
           content: Text("Idir created successfully"),
           duration: Duration(seconds: 2),
         ));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: kPrimaryColor,
           content: Text("error"),
           duration: Duration(seconds: 2),

@@ -81,4 +81,15 @@ class Auth {
     }
     return retVal;
   }
+
+  Future verifyPhone(String phoneno) async {
+    try {
+      await _auth.verifyPhoneNumber(
+          phoneNumber: phoneno,
+          verificationCompleted: (PhoneAuthCredential) async {},
+          verificationFailed: (verificationFailed) async {},
+          codeSent: (verifiacatoinId, resendingToken) {},
+          codeAutoRetrievalTimeout: (verifiacatoinId) {});
+    } catch (e) {}
+  }
 }

@@ -15,7 +15,9 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('requests');
   final CollectionReference paymentCollection =
       FirebaseFirestore.instance.collection('payment');
-
+  final CollectionReference IdirpaymentCollection =
+      FirebaseFirestore.instance.collection('Idirpayment');
+// update user data to database
   Future updateUserData(
     String email,
     String address,
@@ -34,6 +36,33 @@ class DatabaseService {
       'uid': uid,
       // 'profilePic': ''
     });
+  }
+
+  Future editUserData(
+    String uid,
+    String email,
+    String address,
+    String phone,
+    String firstName,
+    String lastName,
+  ) async {
+    String retVal = 'error';
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    try {
+      retVal = 'success';
+
+      await userDocRef.update({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'address': address,
+        'phone': phone,
+
+        // 'profilePic': ''
+      });
+    } catch (e) {}
+
+    return retVal;
   }
 
   Future createIqub(String uid, String iqubName) async {
@@ -150,6 +179,22 @@ class DatabaseService {
     }
   }
 
+  Future<bool> isUserAdmin(String iqubId, String admin) async {
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+    String iqubAdmin = await iqubDocSnapshot.get('admin');
+
+    if (iqubAdmin == admin) {
+      //print('he');
+      print(iqubAdmin);
+      print(admin);
+      return true;
+    } else {
+      //print('ne');
+      return false;
+    }
+  }
+
   searchByName(String iqubName) {
     return FirebaseFirestore.instance
         .collection("iqubs")
@@ -244,7 +289,8 @@ class DatabaseService {
     return retVal;
   }
 
-  Future savePaymentInfo(String iqubId, String uid, String downloadUrl) async {
+  Future saveIqubPaymentInfo(
+      String iqubId, String uid, String downloadUrl) async {
     DocumentReference userDocRef = usersCollection.doc(uid);
     DocumentSnapshot userDocSnapshot = await userDocRef.get();
     DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
@@ -292,30 +338,11 @@ class DatabaseService {
     DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
     await paymentDocRef.update({'accepted': 2});
   }
-  // IqubModel _iqubListFromSnapshot(DocumentSnapshot snapshot) {
-  //   return IqubModel(
-  //       id: uid,
-  //       name: snapshot.get('iqubname'),
-  //       members: List<String>.from(snapshot.get('members')),
-  //       type: snapshot.get('type'),
-  //       admin: snapshot.get('admin'),
-  //       pooledAmount: snapshot.get('pooledAmount'));
-  // }
 
-  // Future<List<IqubModel>> get iqubs {
-  //   return iqubsCollection
-  //       .doc(uid)
-  //       .snapshots()
-  //       .map(_iqubListFromSnapshot)
-  //       .toList();
-  // }
-
-  Future createIdir(
-    String uid,
-    String idirName,
-  ) async {
+  Future createIdir(String uid, String idirName) async {
     String retVal = "error";
     try {
+      retVal = "success";
       DocumentReference idirDocRef = await idirsCollection.add({
         'idirName': idirName,
         'idirIcon': '',
@@ -334,16 +361,17 @@ class DatabaseService {
         'idirs': FieldValue.arrayUnion([idirDocRef.id + '_' + idirName])
       });
     } catch (e) {
-      print(e);
+      retVal = "error";
     }
     return retVal;
   }
 
-  Future joinIdir(String idirId, String uid) async {
+  Future joinIdir(String idirId, String uid, String requestId) async {
     DocumentReference userDocRef = usersCollection.doc(uid);
     DocumentSnapshot userDocSnapshot = await userDocRef.get();
 
     DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    DocumentReference requestDocRef = requestCollection.doc(requestId);
 
     List<dynamic> idirs = await userDocSnapshot.get('idirs');
 
@@ -357,6 +385,7 @@ class DatabaseService {
         'members': FieldValue.arrayRemove([uid])
       });
     } else {
+      requestDocRef.delete();
       await userDocRef.update({
         'idirs': FieldValue.arrayUnion([idirId])
       });
@@ -365,5 +394,206 @@ class DatabaseService {
         'members': FieldValue.arrayUnion([uid])
       });
     }
+  }
+
+  Future requestjoinIdir(String idirId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    DocumentSnapshot idirDocSnapshot = await idirDocRef.get();
+    String Admin = await idirDocSnapshot.get('admin');
+    String idirName = await idirDocSnapshot.get('idirName');
+    String SenderId = await userDocSnapshot.get('uid');
+    String SenderName = await userDocSnapshot.get('firstName');
+    DocumentReference requestDocRef = requestCollection.doc();
+    DocumentSnapshot requestDocSnapshot = await requestDocRef.get();
+
+    requestDocRef = await requestCollection.add({
+      'idirId': idirId,
+      'idirIcon': '',
+      'senderId': SenderId,
+      'receiver': [],
+      'senderName': SenderName,
+      'requestId': [],
+    });
+
+    List<dynamic> idirs = await userDocSnapshot.get('idirs');
+
+    String requests = await requestDocSnapshot.id;
+
+    if (requests.contains(idirId)) {
+      //print('hey');
+      await requestDocRef.update({
+        'idirId': FieldValue.arrayRemove([idirId])
+      });
+
+      await requestDocRef.update({
+        'senderId': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await requestDocRef.update({'requestId': requestDocRef.id});
+      await requestDocRef.update({
+        'receiver': FieldValue.arrayUnion([Admin])
+      });
+    }
+  }
+
+  Future<bool> isUserJoinedIdir(String idirId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+    List<dynamic> idirs = await userDocSnapshot.get('idirs');
+
+    if (idirs.contains(idirId)) {
+      //print('he');
+      return true;
+    } else {
+      //print('ne');
+      return false;
+    }
+  }
+
+  searchIdirByName(String idirName) {
+    return FirebaseFirestore.instance
+        .collection("idirs")
+        .where('idirName', isEqualTo: idirName)
+        .get();
+  }
+
+  Future leaveIdir(String idirId, String currentUser) async {
+    DocumentReference userDocRef = usersCollection.doc(currentUser);
+    // DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    DocumentSnapshot idirDocSnapshot = await idirDocRef.get();
+    List<dynamic> idirs = await idirDocSnapshot.get('members');
+
+    if (idirs.contains(currentUser)) {
+      await userDocRef.update({
+        'idirs': FieldValue.arrayRemove([idirId])
+      });
+      await idirDocRef.update({
+        'members': FieldValue.arrayRemove([currentUser])
+      });
+    } else {
+      print('error');
+    }
+  }
+
+  Future deleteIdir(String idirId) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    // DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    var docref = FirebaseFirestore.instance.collection('idirs').doc(idirId);
+    // List<dynamic> idirs = await userDocSnapshot.get('idirs');
+    docref.delete();
+    // if (idirs.contains(idirId)) {
+    //   await userDocRef.update({
+    //     'idirs': FieldValue.arrayRemove([idirId])
+    //   });
+    // } else {
+    //   print('user not found');
+    // }
+  }
+
+  Future addUserToIdir(String idirId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+    DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    String retVal = 'none';
+    List<dynamic> idirs = await userDocSnapshot.get('idirs');
+    if (idirs.contains(idirId)) {
+      //print('hey');
+      retVal = 'error';
+      // await userDocRef.update({
+      //   'idirs': FieldValue.arrayRemove([idirId])
+      // });
+
+      // await idirDocRef.update({
+      //   'members': FieldValue.arrayRemove([uid])
+      // });
+    } else {
+      retVal = 'success';
+      await userDocRef.update({
+        'idirs': FieldValue.arrayUnion([idirId])
+      });
+
+      await idirDocRef.update({
+        'members': FieldValue.arrayUnion([uid])
+      });
+    }
+    return retVal;
+  }
+
+  Future deleteUserFromIdir(String idirId, String uid) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+    DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    String retVal = 'none';
+    List<dynamic> idirs = await userDocSnapshot.get('idirs');
+    if (idirs.contains(idirId)) {
+      //print('hey');
+      retVal = 'success';
+      await userDocRef.update({
+        'idirs': FieldValue.arrayRemove([idirId])
+      });
+
+      await idirDocRef.update({
+        'members': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      retVal = 'error';
+    }
+    return retVal;
+  }
+
+  Future saveIdirPaymentInfo(
+      String idirId, String uid, String downloadUrl) async {
+    DocumentReference userDocRef = usersCollection.doc(uid);
+    DocumentSnapshot userDocSnapshot = await userDocRef.get();
+    DocumentReference idirDocRef = idirsCollection.doc(idirId);
+    DocumentSnapshot idirDocSnapshot = await idirDocRef.get();
+    String Admin = await idirDocSnapshot.get('admin');
+    String idirName = await idirDocSnapshot.get('idirName');
+    String SenderId = await userDocSnapshot.get('uid');
+    String SenderName = await userDocSnapshot.get('firstName');
+    DocumentReference paymentDocRef = IdirpaymentCollection.doc();
+    DocumentSnapshot paymentDocSnapshot = await paymentDocRef.get();
+    int accepted = 0;
+    paymentDocRef = await paymentCollection.add({
+      'idirId': idirId,
+      'accepted': accepted,
+      'senderId': SenderId,
+      'receiver': '',
+      'image': downloadUrl,
+      'senderName': SenderName,
+      'paymentId': [],
+    });
+
+    String payments = paymentDocSnapshot.id;
+
+    if (payments.contains(idirId)) {
+      //print('hey');
+      await paymentDocRef.update({
+        'idirId': FieldValue.arrayRemove([idirId])
+      });
+
+      await paymentDocRef.update({
+        'senderId': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await paymentDocRef.update({'paymentId': paymentDocRef.id});
+      await paymentDocRef.update({'receiver': Admin});
+    }
+  }
+
+  Future acceptIdirPayment(String paymentId) async {
+    DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
+    await paymentDocRef.update({'accepted': 1});
+  }
+
+  Future rejectIdirPayment(String paymentId) async {
+    DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
+    await paymentDocRef.update({'accepted': 2});
   }
 }

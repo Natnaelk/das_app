@@ -2,25 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/home/home_screen.dart';
 import 'package:das_app/services/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
-class iqubDetailsScreen extends StatefulWidget {
-  String iqubid;
+class idirDetailsScreen extends StatefulWidget {
+  String idirid;
   String uid;
-  iqubDetailsScreen({this.iqubid, this.uid});
+  idirDetailsScreen({this.idirid, this.uid});
 
   @override
-  State<iqubDetailsScreen> createState() => _iqubDetailsScreenState();
+  State<idirDetailsScreen> createState() => _idirDetailsScreenState();
 }
 
-class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
+class _idirDetailsScreenState extends State<idirDetailsScreen> {
   bool _isJoined = false;
-  _joinValueInGroup(uid, iqubId) async {
-    bool value = await DatabaseService(uid: uid).isUserJoined(iqubId, uid);
+  _joinValueInGroup(uid, idirId) async {
+    bool value = await DatabaseService(uid: uid).isUserJoinedIdir(idirId, uid);
     setState(() {
       _isJoined = value;
     });
@@ -28,7 +27,7 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
 
   @override
   void initState() {
-    _joinValueInGroup(widget.uid, widget.iqubid);
+    _joinValueInGroup(widget.uid, widget.idirid);
     super.initState();
   }
 
@@ -37,9 +36,9 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
     AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
     String currentUid = _authStream.uid;
 
-    void _requestjoinIqub(BuildContext context, String groupId) async {
+    void _requestjoinidir(BuildContext context, String groupId) async {
       try {
-        await DatabaseService().requestjoinIqub(
+        await DatabaseService().requestjoinIdir(
           groupId,
           currentUid,
         );
@@ -70,8 +69,8 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
       body: Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
-                .collection("iqubs")
-                .where("iqubId", isEqualTo: widget.iqubid)
+                .collection("idirs")
+                .where("idirId", isEqualTo: widget.idirid)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -92,7 +91,7 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             const Text(
-                              "Iqub Name :",
+                              "idir Name :",
                               style: TextStyle(
                                   color: kPrimaryColor,
                                   fontSize: 20,
@@ -104,7 +103,7 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
                               width: 40,
                             ),
                             Text(
-                              document['iqubName'],
+                              document['idirName'],
                               style: const TextStyle(),
                             ),
                           ],
@@ -113,7 +112,7 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
                           Center(
                               child: FlatButton(
                             onPressed: () {
-                              _requestjoinIqub(context, widget.iqubid);
+                              _requestjoinidir(context, widget.idirid);
                             },
                             color: Colors.black87,
                             height: 40,
@@ -127,13 +126,13 @@ class _iqubDetailsScreenState extends State<iqubDetailsScreen> {
                           Center(
                             child: FlatButton(
                               onPressed: () {
-                                _requestjoinIqub(context, widget.iqubid);
+                                _requestjoinidir(context, widget.idirid);
                               },
                               color: kPrimaryColor,
                               height: 40,
                               minWidth: 80,
-                              child: Text(
-                                'Join Iqub',
+                              child: const Text(
+                                'Join idir',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
