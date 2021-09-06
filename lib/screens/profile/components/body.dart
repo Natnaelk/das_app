@@ -40,18 +40,18 @@ class _BodyState extends State<Body> {
                   builder: (context) => ProfileDetailsScreen()))
             },
           ),
+          // ProfileMenu(
+          //   text: "Notifications",
+          //   icon: "assets/icons/Bell.svg",
+          //   press: () {},
+          // ),
+          // ProfileMenu(
+          //   text: "Settings",
+          //   icon: "assets/icons/Settings.svg",
+          //   press: () {},
+          // ),
           ProfileMenu(
-            text: "Notifications",
-            icon: "assets/icons/Bell.svg",
-            press: () {},
-          ),
-          ProfileMenu(
-            text: "Settings",
-            icon: "assets/icons/Settings.svg",
-            press: () {},
-          ),
-          ProfileMenu(
-            text: "Help Center",
+            text: "About",
             icon: "assets/icons/Question mark.svg",
             press: () {},
           ),

@@ -69,9 +69,9 @@ class _EditUserProfileState extends State<EditUserProfile> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Center(
-                    child: ProfilePic(),
-                  ),
+                  // const Center(
+                  //   child: ProfilePic(),
+                  // ),
                   const SizedBox(
                     height: 20,
                   ),

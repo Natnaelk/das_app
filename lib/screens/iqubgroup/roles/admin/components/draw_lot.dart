@@ -24,7 +24,8 @@ class _DrawLotState extends State<DrawLot> {
         child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("users")
-                .where("iqubs", arrayContains: widget.iqubid)
+                // .where("iqubs", arrayContains: widget.iqubid)
+                .where("paidList", arrayContains: widget.iqubid)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -51,9 +52,14 @@ class _DrawLotState extends State<DrawLot> {
                                 margin: EdgeInsets.fromLTRB(20, 6, 20, 0.0),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                      radius: 24,
+                                      radius: 30.0,
                                       backgroundColor: kPrimaryColor,
-                                      child: Text(document['firstName'])),
+                                      child: Text(
+                                          document['firstName']
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style:
+                                              TextStyle(color: Colors.white))),
                                   title: Text(
                                     document['firstName'],
                                   ),

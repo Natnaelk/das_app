@@ -41,7 +41,7 @@ class _OTPScreenState extends State<OTPScreen> {
           Center(
             child: Text("We have sent your code to +251-${widget.phone}"),
           ),
-          buildTimer(),
+          // buildTimer(),
           SizedBox(
             height: 30,
           ),
@@ -82,23 +82,6 @@ class _OTPScreenState extends State<OTPScreen> {
           )
         ],
       ),
-    );
-  }
-
-  Row buildTimer() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("This code will expire in "),
-        TweenAnimationBuilder(
-          tween: Tween(begin: 120.0, end: 0.0),
-          duration: Duration(seconds: 30),
-          builder: (_, value, child) => Text(
-            "00:${value.toInt()}",
-            style: TextStyle(color: kPrimaryColor),
-          ),
-        ),
-      ],
     );
   }
 

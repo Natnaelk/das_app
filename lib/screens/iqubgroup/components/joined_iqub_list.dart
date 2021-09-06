@@ -37,7 +37,8 @@ class _JoinedIqubState extends State<JoinedIqub> {
                         child: JoinedIqubsCard(
                           IqubName: document['iqubName'],
                           IqubProPic: 'assets/images/insurancepic.jpg',
-                          IqubType: 'Monthly',
+                          IqubType: document['Type'],
+                          PooledMoneyAmount: document['poolAmount'],
                         ),
                       ),
                       onTap: () {
@@ -68,7 +69,7 @@ class JoinedIqubsCard extends StatelessWidget {
   }) : super(key: key);
   final String IqubName;
   final String IqubProPic;
-  final int PooledMoneyAmount;
+  final String PooledMoneyAmount;
   final String IqubType;
   final GestureTapCallback press;
 

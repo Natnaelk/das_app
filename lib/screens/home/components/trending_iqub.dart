@@ -44,7 +44,8 @@ class _TrendingIqubState extends State<TrendingIqub> {
                           child: TrendingiqubsCard(
                         iqubName: document['iqubName'],
                         iqubProPic: 'assets/images/insurancepic.jpg',
-                        iqubType: 'Monthly',
+                        iqubType: document['Type'],
+                        pooledMoneyAmount: document['poolAmount'],
                       )),
                       onTap: () {
                         Navigator.push(
@@ -75,7 +76,7 @@ class TrendingiqubsCard extends StatelessWidget {
   }) : super(key: key);
   final String iqubName;
   final String iqubProPic;
-  final int pooledMoneyAmount;
+  final String pooledMoneyAmount;
   final String iqubType;
   final GestureTapCallback press;
 

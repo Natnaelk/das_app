@@ -17,7 +17,6 @@ class _CreatedIqubState extends State<CreatedIqub> {
   @override
   Widget build(BuildContext context) {
     AuthModel _authStream = Provider.of<AuthModel>(context);
-    // final iqubs = Provider.of<List<IqubModel>>(context);
     String currentUid = _authStream.uid ?? '';
     return StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -37,7 +36,8 @@ class _CreatedIqubState extends State<CreatedIqub> {
                         child: CreatedIqubsCard(
                           IqubName: document['iqubName'],
                           IqubProPic: 'assets/images/insurancepic.jpg',
-                          IqubType: 'Monthly',
+                          IqubType: document['Type'],
+                          PooledMoneyAmount: document['poolAmount'],
                         ),
                       ),
                       onTap: () {
@@ -45,9 +45,9 @@ class _CreatedIqubState extends State<CreatedIqub> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => iqubAdminScreen(
-                                      iqub: document['iqubId'],
-                                      members: document['members'],
-                                    )));
+                                    iqub: document['iqubId'],
+                                    members: document['members'],
+                                    paidMembers: document['paidList'])));
                       });
                 }).toList(),
               ),
@@ -68,7 +68,7 @@ class CreatedIqubsCard extends StatelessWidget {
   }) : super(key: key);
   final String IqubName;
   final String IqubProPic;
-  final int PooledMoneyAmount;
+  final String PooledMoneyAmount;
   final String IqubType;
   final GestureTapCallback press;
 

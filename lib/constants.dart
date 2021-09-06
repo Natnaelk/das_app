@@ -37,6 +37,10 @@ const String kInvalidFullNameError = "Please enter your full name";
 const String kUserNameNullError = "Please enter a user name";
 const String kInvalidUserNameError = "Please enter a vaild user name";
 const String kCycleNullError = "Please specify the cycle of iqub";
+const String kPoolAmount = "Please enter the amount to be pulled";
+const String kBankAccount = "Please enter the amount to be pulled";
+const String kMaxNoOfMem = "Please enter the amount to be pulled";
+const String kAddress = "Please enter the amount to be pulled";
 
 //otp input decoration
 final otpInputDecoration = InputDecoration(

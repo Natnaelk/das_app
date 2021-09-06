@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/constants.dart';
 import 'package:das_app/models/auth_model.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/components/payment_list.dart';
+import 'package:das_app/screens/iqubgroup/roles/admin/components/payment_status.dart';
 import 'package:das_app/screens/iqubgroup/roles/admin/components/request_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +33,19 @@ class _AdminpaymentPageState extends State<AdminpaymentPage> {
       ),
       appBar: AppBar(
         title: Text('payment'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PaymentStatusPage(
+                        iqubId: widget.iqubId,
+                        members: widget.members,
+                      )));
+            },
+            icon: Icon(Icons.signal_wifi_statusbar_null_rounded),
+            color: kPrimaryColor,
+          ),
+        ],
       ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -57,14 +72,14 @@ class _AdminpaymentPageState extends State<AdminpaymentPage> {
                         children: <Widget>[
                           Text(
                             document['senderName'] ?? '',
-                            style: TextStyle(color: Colors.blue, fontSize: 20),
+                            style: TextStyle(color: Colors.blue, fontSize: 18),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Text(
                             "sent you a proof of payment",
-                            style: TextStyle(color: Colors.blue, fontSize: 20),
+                            style: TextStyle(color: Colors.blue, fontSize: 18),
                           ),
                         ]),
                   ),

@@ -20,7 +20,7 @@ class _SignUpFormState extends State<SignUpForm> {
   TextEditingController phonecontroller = TextEditingController();
   TextEditingController firstnamecontroller = TextEditingController();
   TextEditingController lastnamecontroller = TextEditingController();
-  
+
 // sign up user
   void _signUp(String email, String password, String address, String phone,
       String firstName, String lastName, BuildContext context) async {
@@ -237,33 +237,6 @@ class _SignUpFormState extends State<SignUpForm> {
       ),
     );
   }
-
-  // TextFormField buildPhoneNumberFormField() {
-  //   return TextFormField(
-  //     keyboardType: TextInputType.phone,
-  //     controller: phonecontroller,
-  //     onSaved: (newValue) => phoneNumber = newValue,
-  //     onChanged: (value) {
-  //       if (value.isNotEmpty) {
-  //         removeError(error: kPhoneNumberNullError);
-  //       }
-  //       return null;
-  //     },
-  //     validator: (value) {
-  //       if (value.isEmpty) {
-  //         addError(error: kPhoneNumberNullError);
-  //         return "";
-  //       }
-  //       return null;
-  //     },
-  //     decoration: const InputDecoration(
-  //       labelText: "Phone Number",
-  //       hintText: "Enter your phone number",
-  //       floatingLabelBehavior: FloatingLabelBehavior.always,
-  //       suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
-  //     ),
-  //   );
-  // }
 
   TextFormField buildLastNameFormField() {
     return TextFormField(

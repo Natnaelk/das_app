@@ -57,7 +57,7 @@ class DatabaseService {
         'email': email,
         'address': address,
         'phone': phone,
-
+        'paidList': []
         // 'profilePic': ''
       });
     } catch (e) {}
@@ -65,7 +65,14 @@ class DatabaseService {
     return retVal;
   }
 
-  Future createIqub(String uid, String iqubName) async {
+  Future createIqub(
+      String uid,
+      String iqubName,
+      String poolAmount,
+      String bankAccount,
+      String maxNoOfMembers,
+      String address,
+      String type) async {
     String retVal = "error";
     try {
       retVal = "success";
@@ -75,6 +82,13 @@ class DatabaseService {
         'admin': uid,
         'members': [],
         'iqubId': '',
+        'poolAmount': poolAmount,
+        'startingDate': Timestamp.now(),
+        'maximum no of members': maxNoOfMembers,
+        'address': address,
+        'bank Account': bankAccount,
+        'Type': type,
+        'paidList': []
       });
 
       await iqubDocRef.update({
@@ -91,6 +105,12 @@ class DatabaseService {
     }
     return retVal;
   }
+
+  // Future addDataToIqub(String iqubId) async {
+  //   DocumentReference iqubDocRef = usersCollection.doc(iqubId);
+  //   DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+  //   await iqubDocRef.update({});
+  // }
 
   Future joinIqub(String iqubId, String uid, String requestId) async {
     DocumentReference userDocRef = usersCollection.doc(uid);
@@ -334,12 +354,45 @@ class DatabaseService {
     await paymentDocRef.update({'accepted': 1});
   }
 
+  Future addToPaidList(String senderId, String paymentId, String iqubid) async {
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubid);
+    DocumentReference userDocRef = usersCollection.doc(senderId);
+    await iqubDocRef.update({
+      'paidList': FieldValue.arrayUnion([senderId])
+    });
+    await userDocRef.update({
+      'paidList': FieldValue.arrayUnion([iqubid])
+    });
+  }
+
+  Future<bool> isIqubPaid(String iqubId, String uid) async {
+    DocumentReference iqubDocRef = iqubsCollection.doc(iqubId);
+    DocumentSnapshot iqubDocSnapshot = await iqubDocRef.get();
+
+    List<dynamic> paidlists = await iqubDocSnapshot.get('paidList');
+
+    if (paidlists.contains(uid)) {
+      //print('he');
+      return true;
+    } else {
+      //print('ne');
+      return false;
+    }
+  }
+
   Future rejectPayment(String paymentId) async {
     DocumentReference paymentDocRef = paymentCollection.doc(paymentId);
     await paymentDocRef.update({'accepted': 2});
   }
 
-  Future createIdir(String uid, String idirName) async {
+  Future createIdir(
+    String uid,
+    String idirName,
+    String poolAmount,
+    String bankAccount,
+    String maxNoOfMembers,
+    String address,
+  ) async {
     String retVal = "error";
     try {
       retVal = "success";
@@ -349,6 +402,12 @@ class DatabaseService {
         'admin': uid,
         'members': [],
         'idirId': '',
+        'poolAmount': poolAmount,
+        'startingDate': Timestamp.now(),
+        'maximum no of members': maxNoOfMembers,
+        'address': address,
+        'bank Account': bankAccount,
+        'paidList': []
       });
 
       await idirDocRef.update({
@@ -585,6 +644,18 @@ class DatabaseService {
       await paymentDocRef.update({'paymentId': paymentDocRef.id});
       await paymentDocRef.update({'receiver': Admin});
     }
+  }
+
+  Future addIdirToPaidList(
+      String senderId, String paymentId, String idirid) async {
+    DocumentReference idirDocRef = idirsCollection.doc(idirid);
+    DocumentReference userDocRef = usersCollection.doc(senderId);
+    await idirDocRef.update({
+      'paidList': FieldValue.arrayUnion([senderId])
+    });
+    await userDocRef.update({
+      'paidList': FieldValue.arrayUnion([idirid])
+    });
   }
 
   Future acceptIdirPayment(String paymentId) async {

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:das_app/constants.dart';
 import 'package:das_app/models/auth_model.dart';
+import 'package:das_app/screens/idirgroup/roles/admin/components/idir_payment_status.dart';
 import 'package:das_app/screens/idirgroup/roles/admin/components/payment_list.dart';
 import 'package:das_app/screens/idirgroup/roles/admin/components/request_list.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,19 @@ class _IdirAdminpaymentPageState extends State<IdirAdminpaymentPage> {
       ),
       appBar: AppBar(
         title: Text('payment'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => IdirPaymentStatusPage(
+                        idirId: widget.idirId,
+                        members: widget.members,
+                      )));
+            },
+            icon: Icon(Icons.signal_wifi_statusbar_null_rounded),
+            color: kPrimaryColor,
+          ),
+        ],
       ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance

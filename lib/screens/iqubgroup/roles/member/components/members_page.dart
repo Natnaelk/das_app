@@ -50,12 +50,6 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                               Card(
                                   margin: EdgeInsets.fromLTRB(20, 6, 20, 0.0),
                                   child: ListTile(
-                                    // onLongPress: () {
-                                    //   setState(() {
-                                    //     showAlertDialog(
-                                    //         context, widget.iqubid, document['uid']);
-                                    //   });
-                                    // },
                                     leading: CircleAvatar(
                                         radius: 30.0,
                                         backgroundColor: kPrimaryColor,

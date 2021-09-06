@@ -13,13 +13,14 @@ import 'iqub_admin_screen.dart';
 class IqubDrawer extends StatefulWidget {
   String iqub;
   List members;
+  List paidMembers;
+  IqubDrawer({this.iqub, this.members, this.paidMembers});
 
-  IqubDrawer({this.iqub, this.members});
-
-  initState() {
-    String iqubs = iqub;
-    List member = members;
-  }
+  // initState() {
+  //   String iqubs = iqub;
+  //   List member = members;
+  //   List paidMemberss = paidMembers;
+  // }
 
   @override
   State<IqubDrawer> createState() => _IqubDrawerState();
@@ -66,7 +67,8 @@ class _IqubDrawerState extends State<IqubDrawer> {
         buildMenuItem(
           text: 'draw lot',
           icon: Icons.sports_tennis_rounded,
-          press: () => SelectedItem(context, 5, widget.iqub, widget.members),
+          press: () =>
+              SelectedItem(context, 5, widget.iqub, widget.paidMembers),
         ),
         buildMenuItem(
           text: 'delete iqub',

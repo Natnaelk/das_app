@@ -16,11 +16,25 @@ class CreateIdirForm extends StatefulWidget {
 }
 
 class _CreateIdirFormState extends State<CreateIdirForm> {
-  void _createIdir(BuildContext context, String idirName) async {
+  void _createIdir(
+    BuildContext context,
+    String idirName,
+    String poolAmount,
+    String bankAccount,
+    String maxNoOfMembers,
+    String address,
+  ) async {
     try {
       AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
       String currentUid = _authStream.uid;
-      await DatabaseService().createIdir(currentUid, idirName);
+      await DatabaseService().createIdir(
+        currentUid,
+        idirName,
+        poolAmount,
+        bankAccount,
+        maxNoOfMembers,
+        address,
+      );
       if (currentUid.isNotEmpty) {
         Navigator.pushNamed(context, GroupsScreen.routeName);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -40,6 +54,7 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
     }
   }
 
+  TextEditingController maxNoOfMemberscontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
   TextEditingController poolAmountcontroller = TextEditingController();
   TextEditingController Namecontroller = TextEditingController();
@@ -54,7 +69,7 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
   var winAmount;
   String poolAmount;
   var bankAccount;
-
+  var maxNoOfMembers;
   final List<String> errors = [];
 
   void addError({String error}) {
@@ -93,12 +108,13 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
             SizedBox(height: (50)),
             buildNameFormField(),
             SizedBox(height: (30)),
-            buildstartingDateFormField(),
-            SizedBox(height: (30)),
             buildPoolAmountField(),
             SizedBox(height: (30)),
             buildAddressFormField(),
             SizedBox(height: (20)),
+            buildNoOfMembersField(),
+            SizedBox(height: (20)),
+            buildBankAccountField(),
             FormError(errors: errors),
             SizedBox(height: (20)),
             DefaultButton(
@@ -116,7 +132,14 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     KeyboardUtil.hideKeyboard(context);
-                    _createIdir(context, Namecontroller.text);
+                    _createIdir(
+                      context,
+                      Namecontroller.text,
+                      poolAmountcontroller.text,
+                      bankAccountcontroller.text,
+                      maxNoOfMemberscontroller.text,
+                      addresscontroller.text,
+                    );
                   } else {
                     print("Error occurd while creating Idir");
                   }
@@ -156,6 +179,33 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
     );
   }
 
+  TextFormField buildNoOfMembersField() {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      controller: maxNoOfMemberscontroller,
+      onSaved: (newValue) => winAmount = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kMaxNoOfMem);
+
+          return null;
+        }
+      },
+      validator: (value) {
+        if (value.isEmpty) {
+          addError(error: kMaxNoOfMem);
+          return "";
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: "Maximum No of members allowed",
+        hintText: "Enter ",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+    );
+  }
+
   TextFormField buildBankAccountField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -163,18 +213,13 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
       onSaved: (newValue) => bankAccount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
-        } else if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
+          removeError(error: kBankAccount);
+          return null;
         }
-        return null;
       },
       validator: (value) {
         if (value.isEmpty) {
-          addError(error: kEmailNullError);
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
+          addError(error: kBankAccount);
           return "";
         }
         return null;
@@ -209,31 +254,6 @@ class _CreateIdirFormState extends State<CreateIdirForm> {
           hintText: "Enter your address",
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ));
-  }
-
-  TextFormField buildstartingDateFormField() {
-    return TextFormField(
-      onSaved: (newValue) => startingDate = newValue,
-      controller: startingDatecontroller,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kNamelNullError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kNamelNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Starting date",
-        hintText: "Enter the starting date",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
   }
 
   TextFormField buildNameFormField() {

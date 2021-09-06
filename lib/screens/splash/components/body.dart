@@ -15,17 +15,17 @@ class _BodyState extends State<Body> {
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to Das , Let's get started!",
-      "image": "assets/images/insurancepic.jpg"
+      "image": "assets/images/Das_logo.jpg"
     },
     {
       "text":
           "We help people's saving get higher by modernizing the traditional Iqub",
-      "image": "assets/images/savingimage.jpg"
+      "image": "assets/images/dasAppSplashScreen.jpg"
     },
     {
       "text":
           "We help people get insurances by modernizing the traditional Idir",
-      "image": "assets/images/insurancepic.jpg"
+      "image": "assets/images/dasAppSplashScreen1.jpg"
     },
   ];
   @override
@@ -36,7 +36,7 @@ class _BodyState extends State<Body> {
           child: Column(children: <Widget>[
             const Spacer(),
             Expanded(
-                flex: 3,
+                flex: 4,
                 child: PageView.builder(
                   onPageChanged: (value) {
                     setState(() {

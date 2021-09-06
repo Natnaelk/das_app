@@ -12,7 +12,7 @@ class SplashContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(children: <Widget>[
-      Text(
+      const Text(
         "DAS",
         textAlign: TextAlign.center,
         style: TextStyle(
@@ -29,8 +29,8 @@ class SplashContent extends StatelessWidget {
       //const Spacer(flex: 2),
       Image.asset(
         image,
-        height: 264,
-        width: 235,
+        height: 280,
+        width: 280,
       )
     ]);
   }

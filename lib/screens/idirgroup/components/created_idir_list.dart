@@ -36,6 +36,7 @@ class _CreatedIdirState extends State<CreatedIdir> {
                           IdirName: document['idirName'],
                           IdirProPic: 'assets/images/insurancepic.jpg',
                           IdirType: 'Monthly',
+                          PooledMoneyAmount: document['poolAmount'],
                         ),
                       ),
                       onTap: () {
@@ -66,7 +67,7 @@ class CreatedIdirsCard extends StatelessWidget {
   }) : super(key: key);
   final String IdirName;
   final String IdirProPic;
-  final int PooledMoneyAmount;
+  final String PooledMoneyAmount;
   final String IdirType;
   final GestureTapCallback press;
 

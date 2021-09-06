@@ -17,11 +17,25 @@ class CreateIqubForm extends StatefulWidget {
 }
 
 class _CreateIqubFormState extends State<CreateIqubForm> {
-  void _createIqub(BuildContext context, String iqubName) async {
+  void _createIqub(
+      BuildContext context,
+      String iqubName,
+      String poolAmount,
+      DateTime startingDate,
+      String bankAccount,
+      String maxNoOfMembers,
+      String address,
+      String type) async {
     AuthModel _authStream = Provider.of<AuthModel>(context, listen: false);
     String currentUid = _authStream.uid;
-    String result =
-        await DatabaseService(uid: currentUid).createIqub(currentUid, iqubName);
+    String result = await DatabaseService(uid: currentUid).createIqub(
+        currentUid,
+        iqubName,
+        poolAmount,
+        bankAccount,
+        maxNoOfMembers,
+        address,
+        type);
     if (currentUid.isNotEmpty) {
       Navigator.pushNamed(context, GroupsScreen.routeName);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -38,22 +52,22 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
     }
   }
 
-  TextEditingController cyclecontroller = TextEditingController();
-  TextEditingController winAmountcontroller = TextEditingController();
+  TextEditingController maxNoOfMemberscontroller = TextEditingController();
   TextEditingController addresscontroller = TextEditingController();
   TextEditingController poolAmountcontroller = TextEditingController();
   TextEditingController Namecontroller = TextEditingController();
-  TextEditingController startingDatecontroller = TextEditingController();
+  TextEditingController Typecontroller = TextEditingController();
   TextEditingController bankAccountcontroller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   String Name;
-  String startingDate;
-  var Cycle;
+  DateTime startingDate = DateTime.now();
+  int maximumNoOfMembers;
   String address;
   var winAmount;
   String poolAmount;
   var bankAccount;
+  String type;
 
   final List<String> errors = [];
 
@@ -93,15 +107,15 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
             SizedBox(height: (50)),
             buildNameFormField(),
             SizedBox(height: (30)),
-            buildstartingDateFormField(),
-            SizedBox(height: (30)),
             buildPoolAmountField(),
             SizedBox(height: (30)),
-            buildWinAmountField(),
-            SizedBox(height: (30)),
-            buildCycleFormField(),
+            buildNoOfMembersField(),
             SizedBox(height: (30)),
             buildAddressFormField(),
+            SizedBox(height: (20)),
+            buildBankAccountField(),
+            SizedBox(height: (20)),
+            buildTypeField(),
             SizedBox(height: (20)),
             FormError(errors: errors),
             SizedBox(height: (20)),
@@ -120,7 +134,15 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
                     KeyboardUtil.hideKeyboard(context);
-                    _createIqub(context, Namecontroller.text);
+                    _createIqub(
+                        context,
+                        Namecontroller.text,
+                        poolAmountcontroller.text,
+                        startingDate,
+                        bankAccountcontroller.text,
+                        maxNoOfMemberscontroller.text,
+                        addresscontroller.text,
+                        Typecontroller.text);
                   } else {
                     print("Error occurd while creating iqub");
                   }
@@ -134,20 +156,16 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
 
   TextFormField buildPoolAmountField() {
     return TextFormField(
-      obscureText: true,
       controller: poolAmountcontroller,
       onSaved: (newValue) => poolAmount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kPassNullError);
-        } else if (value.isNotEmpty && poolAmount == poolAmount) {
-          removeError(error: kMatchPassError);
+          removeError(error: kPoolAmount);
         }
-        poolAmount = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          addError(error: kPassNullError);
+          addError(error: kPoolAmount);
           return "";
         }
         return null;
@@ -160,32 +178,52 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
     );
   }
 
-  TextFormField buildWinAmountField() {
+  TextFormField buildTypeField() {
     return TextFormField(
-      keyboardType: TextInputType.number,
-      controller: winAmountcontroller,
-      onSaved: (newValue) => winAmount = newValue,
+      controller: Typecontroller,
+      onSaved: (newValue) => type = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
-        } else if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
+          removeError(error: kPoolAmount);
         }
-        return null;
       },
       validator: (value) {
         if (value.isEmpty) {
-          addError(error: kEmailNullError);
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
+          addError(error: kPoolAmount);
           return "";
         }
         return null;
       },
       decoration: const InputDecoration(
-        labelText: "Email",
-        hintText: "Enter your email",
+        labelText: "Iqub Type",
+        hintText: " supported - Weekly, Monthly ",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+    );
+  }
+
+  TextFormField buildNoOfMembersField() {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      controller: maxNoOfMemberscontroller,
+      onSaved: (newValue) => winAmount = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kMaxNoOfMem);
+
+          return null;
+        }
+      },
+      validator: (value) {
+        if (value.isEmpty) {
+          addError(error: kMaxNoOfMem);
+          return "";
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: "Maximum No of members allowed",
+        hintText: "Enter ",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
@@ -198,18 +236,13 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
       onSaved: (newValue) => bankAccount = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
-        } else if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
+          removeError(error: kBankAccount);
+          return null;
         }
-        return null;
       },
       validator: (value) {
         if (value.isEmpty) {
-          addError(error: kEmailNullError);
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
+          addError(error: kBankAccount);
           return "";
         }
         return null;
@@ -244,57 +277,6 @@ class _CreateIqubFormState extends State<CreateIqubForm> {
           hintText: "Enter your address",
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ));
-  }
-
-  TextFormField buildCycleFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      controller: cyclecontroller,
-      onSaved: (newValue) => Cycle = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kCycleNullError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kCycleNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Cycle",
-        hintText: "cycle eg weekly, monthly...",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
-  }
-
-  TextFormField buildstartingDateFormField() {
-    return TextFormField(
-      onSaved: (newValue) => startingDate = newValue,
-      controller: startingDatecontroller,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kNamelNullError);
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kNamelNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Starting date",
-        hintText: "Enter the starting date",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
   }
 
   TextFormField buildNameFormField() {

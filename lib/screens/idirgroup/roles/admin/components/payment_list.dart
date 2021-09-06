@@ -46,6 +46,34 @@ class _IdirPaymentListState extends State<IdirPaymentList> {
     }
   }
 
+  void _addToPaidList(
+      BuildContext context, String idirId, String senderId, paymentId) async {
+    try {
+      await DatabaseService().addIdirToPaidList(senderId, paymentId, idirId);
+      if (senderId != null) {
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("payment accepted successfully"),
+          duration: Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: kPrimaryColor,
+          content: Text("error"),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: kPrimaryColor,
+        content: Text(e.toString()),
+        duration: const Duration(seconds: 2),
+      ));
+    }
+  }
+
   void _rejectPayment(BuildContext context, String paymentId) async {
     try {
       await DatabaseService().rejectPayment(paymentId);
@@ -162,6 +190,8 @@ class _IdirPaymentListState extends State<IdirPaymentList> {
                           FlatButton(
                             onPressed: () {
                               _acceptPayment(context, widget.paymentId);
+                              _addToPaidList(context, widget.idirId,
+                                  widget.senderId, widget.paymentId);
                             },
                             color: Colors.green,
                             child: Text(

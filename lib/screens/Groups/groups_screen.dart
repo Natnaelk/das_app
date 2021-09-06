@@ -19,7 +19,7 @@ class GroupsScreen extends StatelessWidget {
         appBar: AppBar(
             title: const Text("Groups"),
             actions: [
-              GroupsAppBar(),
+              //      GroupsAppBar(),
             ],
             bottom: TabBar(
               padding: EdgeInsets.only(left: 10),
